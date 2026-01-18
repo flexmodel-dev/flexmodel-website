@@ -42,4 +42,4 @@ docker run -p 8080:8080 -e JAVA_OPTS="-Dfile.encoding=UTF-8 -Duser.timezone=GMT+
 
 请见Github代码仓库，以下为docker-compose部署示例：
 
-https://github.com/flexmodel-projects/flexmodel-quickstarts/tree/main/docker-compose
+https://github.com/flexmodel-dev/flexmodel-quickstarts/tree/main/docker-compose

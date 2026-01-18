@@ -39,7 +39,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-              'https://github.com/flexmodel-projects/flexmodel-website/edit/main',
+              'https://github.com/flexmodel-dev/flexmodel-website/edit/main',
         },
         blog: {
           showReadingTime: true,
@@ -133,7 +133,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/flexmodel-projects',
+          href: 'https://github.com/flexmodel-dev',
           label: 'GitHub',
           position: 'right',
         },
