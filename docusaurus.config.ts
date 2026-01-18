@@ -1,7 +1,6 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import type * as Redocusaurus from 'redocusaurus';
 
 const config: Config = {
   title: 'Flexmodel',
@@ -61,29 +60,6 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
-    [
-      'redocusaurus',
-      {
-        // Plugin Options for loading OpenAPI files
-        specs: [
-          // You can also pass it a OpenAPI spec URL
-          {
-            spec: 'https://preview.flexmodel.dev/api/v1/openapi',
-            // spec: 'http://localhost:8080/q/openapi',
-            // spec: 'https://petstore.swagger.io/v2/swagger.json',
-            route: '/openapi/',
-          },
-        ],
-        // Theme Options for modifying how redoc renders them
-        theme: {
-          // Change with your site colors
-          primaryColor: '#1890ff',
-          options: {
-            disableSearch: true
-          }
-        },
-      },
-    ] satisfies Redocusaurus.PresetEntry,
   ],
 
   plugins: [
