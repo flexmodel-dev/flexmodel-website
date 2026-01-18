@@ -68,7 +68,7 @@ const config: Config = {
         specs: [
           // You can also pass it a OpenAPI spec URL
           {
-            spec: 'https://preview.flexmodel.dev/api/v1/openapi',
+            spec: 'http://preview.flexmodel.dev/api/v1/openapi',
             // spec: 'http://localhost:8080/q/openapi',
             // spec: 'https://petstore.swagger.io/v2/swagger.json',
             route: '/openapi/',
