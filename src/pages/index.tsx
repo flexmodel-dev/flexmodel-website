@@ -56,7 +56,7 @@ function HomepageHeader() {
             
             <Link
               className={styles.secondaryButton}
-              to="https://preview.flexmodel.wetech.tech/"
+              to="https://preview.flexmodel.dev/"
             >
               <span>✨ 在线体验</span>
             </Link>

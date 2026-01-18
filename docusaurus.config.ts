@@ -68,7 +68,7 @@ const config: Config = {
         specs: [
           // You can also pass it a OpenAPI spec URL
           {
-            spec: 'https://preview.flexmodel.wetech.tech/q/openapi',
+            spec: 'https://preview.flexmodel.dev/q/openapi',
             // spec: 'http://localhost:8080/q/openapi',
             // spec: 'https://petstore.swagger.io/v2/swagger.json',
             route: '/openapi/',
@@ -128,7 +128,7 @@ const config: Config = {
         {to: '/docs/api', label: 'API', sidebarId: 'apiSidebar', position: 'left'},
         /*   {to: '/blog', label: 'Blog', position: 'left'},*/
         {
-          href: 'https://preview.flexmodel.wetech.tech',
+          href: 'https://preview.flexmodel.dev',
           label: '在线预览',
           position: 'right',
         },
