@@ -60,17 +60,17 @@ sidebar_position: 10
 
 | 类型       | 名称   | Java类型映射                | 描述 |
 |----------|------|-------------------------|------|
-| String   | 字符串  | java.lang.String        | 可变长度字符串 |
-| Float    | 浮点数  | java.lang.Double        | 精确小数类型 |
+| String   | 字符串  | java.lang.String        | 可变长度字符串，支持设置长度 |
 | Int      | 整型   | java.lang.Integer       | 32位整数 |
 | Long     | 长整型  | java.lang.Long          | 64位整数 |
+| Float    | 浮点数  | java.lang.Double        | 双精度浮点数，支持设置精度(precision)和刻度(scale) |
 | Boolean  | 布尔   | java.lang.Boolean       | 布尔值 |
 | DateTime | 日期时间 | java.time.LocalDateTime | 日期时间 |
 | Date     | 日期   | java.time.LocalDate     | 日期 |
 | Time     | 时间   | java.time.LocalTime     | 时间 |
 | JSON     | JSON | java.util.Map           | JSON数据 |
-| Enum     | 枚举   | java.lang.String        | 枚举值 |
-| Relation | 关系   | 关联对象                 | 实体关联 |
+| EnumRef  | 枚举引用 | java.lang.String        | 引用枚举类型的值 |
+| Relation | 关系   | 关联对象                 | 实体关联，支持设置关联字段和级联删除 |
 
 ### 视图（View）
 
@@ -173,7 +173,8 @@ session.schema().createEntity("Student", entity -> entity
     .addField(new StringField("id").asIdentity().setDefaultValue(UUID))
     .addField(new StringField("studentName").setLength(255))
     .addField(new IntField("age"))
-    .addField(new EnumField("gender").setFrom("UserGender"))
+    .addField(new FloatField("score").setPrecision(5).setScale(2))
+    .addField(new EnumRefField("gender").setFrom("UserGender"))
     .addField(new RelationField("studentClass")
         .setFrom("Classes")
         .setLocalField("classId")
