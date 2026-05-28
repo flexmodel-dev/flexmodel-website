@@ -43,8 +43,8 @@ GraphQL graphQL = graphQLProvider.getGraphQL();
 ```java
 // 定义查询
 String query = """
-    query GetStudents($minAge: Int, $pageSize: Int) {
-        students(where: {age: {_gte: $minAge}}, page: {pageSize: $pageSize}) {
+    query GetStudents($minAge: Int, $size: Int = 10, $page: Int = 1) {
+        student(where: {age: {_gte: $minAge}}, size: $size, page: $page) {
             total
             list {
                 id
@@ -90,8 +90,8 @@ if (result.getErrors().isEmpty()) {
 ```java
 // 创建学生
 String mutation = """
-    mutation CreateStudent($input: StudentInput!) {
-        createStudent(input: $input) {
+    mutation CreateStudent($data: StudentInsertInput!) {
+        createStudent(data: $data) {
             id
             studentName
             age
@@ -102,7 +102,7 @@ String mutation = """
     """;
 
 Map<String, Object> variables = new HashMap<>();
-variables.put("input", Map.of(
+variables.put("data", Map.of(
     "studentName", "张三",
     "age", 18,
     "gender", "MALE"
@@ -203,7 +203,7 @@ graphQLProvider.setErrorHandler(new GraphQLErrorHandler() {
 ```graphql
 # 获取所有学生
 query {
-  students {
+  student {
     id
     studentName
     age
@@ -213,7 +213,7 @@ query {
 
 # 获取单个学生
 query {
-  student(id: "1") {
+  studentById(id: "1") {
     id
     studentName
     age
@@ -227,7 +227,7 @@ query {
 ```graphql
 # 年龄大于18的学生
 query {
-  students(where: {age: {_gte: 18}}) {
+  student(where: {age: {_gte: 18}}) {
     id
     studentName
     age
@@ -236,7 +236,7 @@ query {
 
 # 姓张的学生
 query {
-  students(where: {studentName: {_contains: "张"}}) {
+  student(where: {studentName: {_contains: "张"}}) {
     id
     studentName
   }
@@ -247,9 +247,10 @@ query {
 
 ```graphql
 query {
-  students(
-    page: {current: 1, pageSize: 10}
-    sort: [{field: "age", direction: DESC}]
+  student(
+    page: 1
+    size: 10
+    orderBy: {age: desc}
   ) {
     total
     list {
@@ -265,7 +266,7 @@ query {
 
 ```graphql
 query {
-  students {
+  student {
     id
     studentName
     studentClass {
@@ -281,18 +282,18 @@ query {
 
 ```graphql
 query {
-  studentsAggregate(where: {age: {_gte: 18}}) {
-    count
-    avg {
+  studentAggregate(where: {age: {_gte: 18}}) {
+    _count
+    _avg {
       age
     }
-    sum {
+    _sum {
       age
     }
-    min {
+    _min {
       age
     }
-    max {
+    _max {
       age
     }
   }
@@ -305,7 +306,7 @@ query {
 
 ```graphql
 mutation {
-  createStudent(input: {
+  createStudent(data: {
     studentName: "张三"
     age: 18
     gender: MALE
@@ -324,9 +325,9 @@ mutation {
 
 ```graphql
 mutation {
-  updateStudent(
+  updateStudentById(
     id: "1"
-    input: {
+    set: {
       studentName: "张三（已更新）"
       age: 19
     }
@@ -343,7 +344,7 @@ mutation {
 
 ```graphql
 mutation {
-  deleteStudent(id: "1") {
+  deleteStudentById(id: "1") {
     id
     studentName
   }
