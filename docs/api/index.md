@@ -29,7 +29,7 @@ Authorization: Bearer <your-jwt-token>
 
 ### 基础路径
 
-- REST API: `/api/v1`
+- REST API: `/api`
 - GraphQL: `/graphql`
 
 ### 响应格式
