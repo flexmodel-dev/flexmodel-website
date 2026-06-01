@@ -10,9 +10,6 @@ query MyQuery {
   }
   total: system_aggregate_Student(where: {studentName: {_in: ["李四", "王五"]}}) @transform(get: "_count") {
     _count
-    _max {
-      age
-    }
   }
   maxAge: system_aggregate_Student(where: {studentName: {_in: ["李四", "王五"]}}) @transform(get: "_max.age") {
     _max {
