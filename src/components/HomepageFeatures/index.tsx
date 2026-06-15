@@ -11,29 +11,56 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: '无代码生成通用接口',
+    title: '无代码数据建模',
     Svg: require('@site/static/img/undraw_developer_activity_re_39tg.svg').default,
     description: (
         <>
-          通过简化的操作方式，允许用户在无需编写代码的情况下，快速创建和管理应用程序接口，从而提升开发效率和降低技术门槛。
+          运行时动态创建数据模型，自动生成 GraphQL 与 REST API，支持 10+ 数据库，让数据服务开发变得前所未有地简单。
         </>
     ),
   },
   {
-    title: '跨源数据关联',
+    title: '可视化流程编排',
     Svg: require('@site/static/img/undraw_add_information_j2wg.svg').default,
     description: (
         <>
-          借助 GraphQL 的数据图，可以轻松地将不同来源的数据进行关联，实现数据的多源查询与聚合。
+          基于 BPMN 风格的低代码流程设计器，通过拖拽节点构建后端业务逻辑，支持服务任务、排排网关、调用活动等节点类型。
         </>
     ),
   },
   {
-    title: '全面支持信创国产化',
+    title: '分布式任务调度',
     Svg: require('@site/static/img/undraw_best_place_re_lne9.svg').default,
     description: (
         <>
-          支持国产化环境和多数据库适配，除了主流数据库外，目前已支持达梦、GBase、人大金仓、东方通等多款国产信创平台的接入。
+          内置触发器与作业执行引擎，支持 Cron、延时及事件驱动调度，可与流程编排深度联动实现自动化。
+        </>
+    ),
+  },
+  {
+    title: '对象存储管理',
+    Svg: require('@site/static/img/undraw_add_information_j2wg.svg').default,
+    description: (
+        <>
+          统一抽象 S3、OSS 与本地存储，轻松管理 Bucket 与文件对象，上传下载一键完成。
+        </>
+    ),
+  },
+  {
+    title: '统一身份认证',
+    Svg: require('@site/static/img/undraw_developer_activity_re_39tg.svg').default,
+    description: (
+        <>
+          完整 RBAC 权限体系，支持 OIDC、LDAP、社交账号及 JWT 安全验证，项目级身份提供商灵活配置。
+        </>
+    ),
+  },
+  {
+    title: 'AI 工具集成',
+    Svg: require('@site/static/img/undraw_best_place_re_lne9.svg').default,
+    description: (
+        <>
+          基于 MCP 协议开放 15 个核心工具，让 AI 客户端直接管理项目、建模与数据，赋能智能应用开发。
         </>
     ),
   },
@@ -45,7 +72,7 @@ function Feature({title, Svg, description, index}: FeatureItem & {index: number}
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, index * 200);
+    }, index * 150);
     return () => clearTimeout(timer);
   }, [index]);
 
@@ -72,7 +99,7 @@ export default function HomepageFeatures(): JSX.Element {
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>核心特性</h2>
             <p className={styles.sectionSubtitle}>
-              强大的功能，简单的操作，让API开发变得前所未有的简单
+              强大的功能，简单的操作，面向下一代应用的统一数据访问层
             </p>
           </div>
           <div className="row">

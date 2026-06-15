@@ -28,13 +28,13 @@ sidebar_position: 40
 ## 添加依赖
 ```xml
 <dependency>
-  <groupId>tech.wetech.flexmodel</groupId>
+  <groupId>dev.flexmodel</groupId>
   <artifactId>flexmodel-json-logic</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
-要求Java 17以上版本，低版本不受支持
+要求Java 25以上版本，低版本不受支持
 
 ## Node Type
 

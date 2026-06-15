@@ -2,8 +2,16 @@
 
 ## 后端技术栈
 
-Java 21、Groovy、Maven、Quarkus、Vert.x
+Java 25、Groovy、Maven、Quarkus 3、GraalVM JavaScript、HikariCP
 
 ## 前端技术栈
 
-JavaScript/TypeScript、Vite、React、Ant-design
+TypeScript、Vite、React 18、Ant Design 6、Tailwind CSS、Redux Toolkit、Zustand、@xyflow/react、ECharts、Monaco Editor、i18next
+
+## 云函数运行时
+
+Deno、Hono.js
+
+## 文档站
+
+Docusaurus

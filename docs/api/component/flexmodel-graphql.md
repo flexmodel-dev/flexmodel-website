@@ -19,7 +19,7 @@ Flexmodel的GraphQL模块，自动为数据模型生成GraphQL Schema和查询�
 
 ```xml
 <dependency>
-    <groupId>tech.wetech.flexmodel</groupId>
+    <groupId>dev.flexmodel</groupId>
     <artifactId>flexmodel-graphql</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
