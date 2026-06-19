@@ -82,7 +82,7 @@ const records = await client.query('dev_test', 'Student', { page: 1, size: 10 })
 | `PUT /functions/{name}` | 更新函数 |
 | `DELETE /functions/{name}` | 删除函数 |
 | `POST /functions/{name}/deploy` | 部署函数到 Sidecar |
-| `POST /functions/{name}/invoke` | 调用函数 |
+| `POST /api/runtime/projects/{projectId}/functions/{name}` | 调用函数 |
 | `GET /function-templates` | 获取函数模板列表 |
 
 更多端点请参考 Swagger UI (`/q/swagger-ui`)。
