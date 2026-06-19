@@ -2,26 +2,26 @@
 sidebar_position: 60
 ---
 
-# 边缘函数
+# 云函数
 
 :::caution 实验性功能
 
-边缘函数功能目前处于实验性阶段，端到端集成测试尚未完成。API 界面可能随版本迭代发生变化，请谨慎在生产环境中使用。
+云函数功能目前处于实验性阶段，端到端集成测试尚未完成。API 界面可能随版本迭代发生变化，请谨慎在生产环境中使用。
 
 :::
 
-Flexmodel 提供了边缘函数（Edge Functions）能力，对标 Supabase Functions，允许用户编写和部署自定义的 TypeScript/JavaScript 函数，在隔离的 Deno Worker 中执行。
+Flexmodel 提供了云函数（Cloud Functions）能力，对标 Supabase Functions，允许用户编写和部署自定义的 TypeScript/JavaScript 函数，在隔离的 Deno Worker 中执行。
 
 ## 关键概念
 
 ### 函数（Function）
-一个边缘函数由名称、源代码文件和配置组成。函数创建后需要部署到 Sidecar 才能被调用。
+一个云函数由名称、源代码文件和配置组成。函数创建后需要部署到 Sidecar 才能被调用。
 
 ### Deno Sidecar
-边缘函数的运行时环境是一个独立的 Deno 进程（Sidecar），基于 Hono.js 框架提供 HTTP 服务。每个函数在独立的 Deno Worker 中执行，确保隔离性和安全性。
+云函数的运行时环境是一个独立的 Deno 进程（Sidecar），基于 Hono.js 框架提供 HTTP 服务。每个函数在独立的 Deno Worker 中执行，确保隔离性和安全性。
 
 ### Worker 隔离
-每个边缘函数调用在独立的 Deno Worker 中执行：
+每个云函数调用在独立的 Deno Worker 中执行：
 - 函数之间互不影响
 - 函数崩溃不会影响主服务
 - 支持超时控制（默认 30 秒）
@@ -73,7 +73,7 @@ const records = await client.query('dev_test', 'Student', { page: 1, size: 10 })
 
 ## API 端点
 
-边缘函数相关的 REST API 基础路径为 `/api/projects/{projectId}/functions`：
+云函数相关的 REST API 基础路径为 `/api/projects/{projectId}/functions`：
 
 | 端点 | 说明 |
 |------|------|
