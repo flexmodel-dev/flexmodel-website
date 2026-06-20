@@ -45,6 +45,30 @@ Flexmodel MCP Server 提供 3 组共 15 个工具：
 | `update_record` | 更新数据记录 |
 | `delete_record` | 删除数据记录 |
 
+## 认证
+
+MCP 端点需要通过 URL query 参数 `api_key` 传递 API Key 进行身份认证。API Key 可在管理后台的「API Key」页面创建和管理。
+
+在 URL 末尾追加 `?api_key=<your_api_key>` 即可：
+
+```json
+{
+  "mcpServers": {
+    "flexmodel": {
+      "url": "http://localhost:8080/api/mcp?api_key=fm_ak_xxxxx"
+    }
+  }
+}
+```
+
+缺少或无效的 API Key 将返回 401 认证错误。
+
+### 安全建议
+
+- 为 MCP 使用专用的 API Key，便于独立管理权限和轮换密钥
+- 定期在管理后台轮换 API Key（重新生成）
+- 避免将 API Key 硬编码在公开代码库中
+
 ## AI 客户端集成
 
 ### Claude Desktop
@@ -55,7 +79,7 @@ Flexmodel MCP Server 提供 3 组共 15 个工具：
 {
   "mcpServers": {
     "flexmodel": {
-      "url": "http://localhost:8080/api/mcp"
+      "url": "http://localhost:8080/api/mcp?api_key=fm_ak_xxxxx"
     }
   }
 }
@@ -63,7 +87,7 @@ Flexmodel MCP Server 提供 3 组共 15 个工具：
 
 ### 其他 MCP 客户端
 
-任何支持 MCP 协议的客户端都可以通过 `/mcp` 端点连接到 Flexmodel。MCP 工具的参数格式与 REST API 一致，例如 `query_records` 的 filter 参数使用与 [查询条件](../../api/definition/condition.md) 相同的 DSL 语法。
+任何支持 MCP 协议的客户端都可以通过 `/api/mcp` 端点连接到 Flexmodel，在 URL 中携带 `api_key` 参数完成认证。MCP 工具的参数格式与 REST API 一致，例如 `query_records` 的 filter 参数使用与 [查询条件](../../api/definition/condition.md) 相同的 DSL 语法。
 
 ## 使用场景
 

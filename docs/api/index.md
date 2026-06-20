@@ -37,7 +37,7 @@ Authorization: Bearer <your-jwt-token>
 
 - REST API: `/api`
 - GraphQL: `/graphql`
-- MCP Server: `/mcp`
+- MCP Server: `/api/mcp`
 
 ### 响应格式
 
