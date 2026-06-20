@@ -15,10 +15,10 @@ Flexmodel 提供了云函数（Cloud Functions）能力，对标 Supabase Functi
 ## 关键概念
 
 ### 函数（Function）
-一个云函数由名称、源代码文件和配置组成。函数创建后需要部署到 Sidecar 才能被调用。
+一个云函数由名称、源代码文件和配置组成。函数创建后需要部署到 Functions Runtime 才能被调用。
 
-### Deno Sidecar
-云函数的运行时环境是一个独立的 Deno 进程（Sidecar），基于 Hono.js 框架提供 HTTP 服务。每个函数在独立的 Deno Worker 中执行，确保隔离性和安全性。
+### Deno Functions Runtime
+云函数的运行时环境是一个独立的 Deno 进程（Functions Runtime），基于 Hono.js 框架提供 HTTP 服务。每个函数在独立的 Deno Worker 中执行，确保隔离性和安全性。
 
 ### Worker 隔离
 每个云函数调用在独立的 Deno Worker 中执行：
@@ -35,7 +35,7 @@ Flexmodel 提供了云函数（Cloud Functions）能力，对标 Supabase Functi
 ```
 
 1. **创建**: 定义函数名称和源代码
-2. **部署**: 将函数源代码部署到 Deno Sidecar
+2. **部署**: 将函数源代码部署到 Deno Functions Runtime
 3. **调用**: 通过 HTTP 或内部触发调用函数
 
 ## 多文件源码
@@ -81,7 +81,7 @@ const records = await client.query('dev_test', 'Student', { page: 1, size: 10 })
 | `POST /functions` | 创建函数 |
 | `PUT /functions/{name}` | 更新函数 |
 | `DELETE /functions/{name}` | 删除函数 |
-| `POST /functions/{name}/deploy` | 部署函数到 Sidecar |
+| `POST /functions/{name}/deploy` | 部署函数到 Functions Runtime |
 | `POST /api/runtime/projects/{projectId}/functions/{name}` | 调用函数 |
 | `GET /function-templates` | 获取函数模板列表 |
 
