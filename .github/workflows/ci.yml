@@ -35,4 +35,4 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: build/*
           strip_components: 1
-          target: /opt/1panel/apps/openresty/openresty/www/sites/flexmodel.wetech.tech/index
+          target: /opt/1panel/apps/openresty/openresty/www/sites/flexmodel.dev/index
