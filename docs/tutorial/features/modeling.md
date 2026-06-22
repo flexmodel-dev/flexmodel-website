@@ -22,19 +22,19 @@ Flexmodel 支持三种模型类型：
 
 实体字段支持以下数据类型：
 
-| 类型 | 说明 |
-|------|------|
-| String | 字符串，可配置长度 |
-| Int | 32 位整数 |
-| Long | 64 位长整数 |
-| Float | 单精度浮点数 |
-| Double | 双精度浮点数 |
-| Decimal | 高精度小数 |
-| BigInt | 大整数 |
-| Boolean | 布尔值 |
-| DateTime | 日期时间 |
-| JSON | JSON 对象 |
-| Bytes | 字节数组 |
+| 类型       | 说明        |
+|----------|-----------|
+| String   | 字符串，可配置长度 |
+| Int      | 32 位整数    |
+| Long     | 64 位长整数   |
+| Float    | 单精度浮点数    |
+| Double   | 双精度浮点数    |
+| Boolean  | 布尔值       |
+| DateTime | 日期时间      |
+| Date     | 日期        |
+| JSON     | JSON 对象   |
+| EnumRef  | 枚举引用      |
+| Relation | 模型引用      |
 
 ### 字段修饰符
 
