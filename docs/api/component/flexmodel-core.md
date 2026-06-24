@@ -207,7 +207,7 @@ int affectedRows = session.data().insert("users", userData);
 
 // 批量插入
 List<Map<String, Object>> users = Arrays.asList(user1, user2, user3);
-session.data().insertAll("users", users);
+session.data().insertBatch("users", users);
 
 // 更新操作
 Map<String, Object> updateData = Map.of("age", 26);
@@ -219,8 +219,8 @@ int deletedRows = session.data().delete("users",
     Expressions.field("id").eq("1"));
 
 // 查询操作
-Map<String, Object> user = session.data().findById("users", "1");
-List<Map<String, Object>> users = session.data().find("users", query);
+Optional<Map<String, Object>> user = session.data().findById("users", "1");
+List<Map<String, Object>> users = session.data().findMany("users", query);
 long count = session.data().count("users", query);
 boolean exists = session.data().exists("users", query);
 ```
@@ -229,14 +229,13 @@ boolean exists = session.data().exists("users", query);
 
 ```java
 // SQL原生查询
-List<Map<String, Object>> results = session.data().findByNativeStatement(
+List<Map<String, Object>> results = session.data().executeNative(
     "SELECT * FROM users WHERE age > ${minAge} AND status = ${status}",
-    Map.of("minAge", 18, "status", "ACTIVE"),
-    Map.class
+    Map.of("minAge", 18, "status", "ACTIVE")
 );
 
 // MongoDB原生查询
-List<Map<String, Object>> results = session.data().findByNativeStatement(
+List<Map<String, Object>> results = session.data().executeNative(
     """
     {
         "find": "users",
@@ -245,8 +244,7 @@ List<Map<String, Object>> results = session.data().findByNativeStatement(
         "limit": 10
     }
     """,
-    Map.of("minAge", 18, "status", "ACTIVE"),
-    Map.class
+    Map.of("minAge", 18, "status", "ACTIVE")
 );
 
 // 原生查询模型
@@ -254,8 +252,8 @@ NativeQueryDefinition queryModel = new NativeQueryDefinition("getActiveUsers");
 queryModel.setStatement("SELECT * FROM users WHERE status = 'ACTIVE'");
 session.schema().createNativeQuery(queryModel);
 
-List<Map<String, Object>> results = session.data().findByNativeQuery(
-    "getActiveUsers", Map.of(), Map.class);
+List<Map<String, Object>> results = session.data().executeNativeQuery(
+    "getActiveUsers", Map.of());
 ```
 
 ## 使用
@@ -298,7 +296,7 @@ SessionFactory sessionFactory = SessionFactory.builder()
 Session session = sessionFactory.createSession("default");
 
 // 查询操作
-List<Map<String, Object>> users = session.data().find("users", 
+List<Map<String, Object>> users = session.data().findMany("users", 
     Query.Builder.create()
         .where(Expressions.field("age").gte(18))
         .build());
@@ -338,7 +336,7 @@ try {
 ```java
 // 批量插入
 List<Map<String, Object>> users = Arrays.asList(user1, user2, user3);
-session.data().insertAll("users", users);
+session.data().insertBatch("users", users);
 
 // 批量更新
 session.data().update("users", 
@@ -399,7 +397,7 @@ public class UserResource {
 
     @GET
     public Response getAllUsers() {
-        List<Map<String, Object>> users = session.data().find("users", 
+        List<Map<String, Object>> users = session.data().findMany("users", 
             Query.Builder.create().build());
         return Response.ok(users).build();
     }

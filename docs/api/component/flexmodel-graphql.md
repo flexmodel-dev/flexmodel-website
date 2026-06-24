@@ -132,7 +132,7 @@ public class CustomStudentDataFetcher extends FlexmodelAbstractDataFetcher {
     public Object get(DataFetchingEnvironment environment) {
         // 自定义查询逻辑
         String studentId = environment.getArgument("id");
-        return session.findById("Student", studentId);
+        return session.data().findById("Student", studentId).orElse(null);
     }
 }
 
