@@ -36,14 +36,29 @@ const student = await client.data.from('Student').findOne('001', { expand: ['cla
 // 创建
 const created = await client.data.from('Student').create({ name: 'Alice', age: 16 })
 
+// 批量创建
+const batch = await client.data.from('Student').createMany([
+  { name: 'Alice', age: 16 },
+  { name: 'Bob', age: 17 },
+])
+
 // 全量更新
 await client.data.from('Student').update(1, { data: { name: 'Alicia' } })
+
+// 批量更新（每条记录必须包含 id 字段）
+await client.data.from('Student').updateMany({ data: [
+  { id: 1, name: 'Alicia' },
+  { id: 2, name: 'Bob Updated' },
+] })
 
 // 部分更新
 await client.data.from('Student').merge(1, { data: { name: 'Alicia' } })
 
 // 删除
 await client.data.from('Student').delete(1)
+
+// 批量删除
+await client.data.from('Student').deleteMany({ ids: [1, 2, 3] })
 
 // 计数
 const count = await client.data.from('Student').count({ where: { age: { _gt: 18 } } })
@@ -110,10 +125,13 @@ await client.data.from('Student').project('other-project').findMany({})
 | `findMany(opts?)` | GET | `PageDTO<T>` | 分页查询 |
 | `findOne(id, opts?)` | GET | `T` | 按 ID 获取单条 |
 | `create(data)` | POST | `T` | 创建单条记录 |
-| `create(data[])` | POST | `T[]` | 批量创建 |
+| `create(data[])` | POST | `T[]` | 批量创建（调用 /batch 端点） |
+| `createMany(data[])` | POST | `T[]` | 批量创建 |
 | `update(id, { data })` | PUT | `T` | 全量更新 |
+| `updateMany({ data })` | PUT | `T[]` | 批量更新，每条记录必须含 id |
 | `merge(id, { data })` | PATCH | `T` | 部分更新 |
 | `delete(id)` | DELETE | `void` | 删除 |
+| `deleteMany({ ids })` | DELETE | `number` | 批量删除，返回删除数量 |
 | `count(opts?)` | GET | `number` | 计数 |
 | `query()` | — | `FluentQueryBuilder` | 链式构建器入口 |
 
@@ -152,12 +170,39 @@ const student = await client.data.from('Student').findOne('001', { expand: ['cla
 // 单条
 const created = await client.data.from('Student').create({ name: 'Alice', age: 16 })
 
-// 批量
+// 批量（传入数组自动调用 /batch 端点）
 const batch = await client.data.from('Student').create([
   { name: 'Alice', age: 16 },
   { name: 'Bob', age: 17 },
 ])
+
+// 显式批量创建
+const batch2 = await client.data.from('Student').createMany([
+  { name: 'Alice', age: 16 },
+  { name: 'Bob', age: 17 },
+])
 ```
+
+### 批量更新
+
+每条记录必须包含 `id` 字段：
+
+```typescript
+const updated = await client.data.from('Student').updateMany({
+  data: [
+    { id: 1, name: 'Alicia' },
+    { id: 2, name: 'Bob Updated' },
+  ],
+})
+```
+
+### 批量删除
+
+```typescript
+const deletedCount = await client.data.from('Student').deleteMany({ ids: [1, 2, 3] })
+```
+
+> 批量操作上限为 **200 条**记录，超出将返回 HTTP 400 错误。
 
 ### 计数
 
@@ -335,7 +380,10 @@ SDK 便捷方法映射到后端数据记录 API（详见[数据记录](/docs/tut
 | `findMany()` | GET | `/api/projects/{pid}/models/{model}/records` |
 | `findOne(id)` | GET | `/api/projects/{pid}/models/{model}/records/{id}` |
 | `create()` | POST | `/api/projects/{pid}/models/{model}/records` |
+| `createMany()` | POST | `/api/projects/{pid}/models/{model}/records/batch` |
 | `update(id, {data})` | PUT | `/api/projects/{pid}/models/{model}/records/{id}` |
+| `updateMany({data})` | PUT | `/api/projects/{pid}/models/{model}/records/batch` |
 | `merge(id, {data})` | PATCH | `/api/projects/{pid}/models/{model}/records/{id}` |
 | `delete(id)` | DELETE | `/api/projects/{pid}/models/{model}/records/{id}` |
+| `deleteMany({ids})` | DELETE | `/api/projects/{pid}/models/{model}/records/batch` |
 | `count()` | GET | `/api/projects/{pid}/models/{model}/records` (page=1, size=0) |
