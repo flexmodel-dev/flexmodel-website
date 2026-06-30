@@ -2,7 +2,9 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import FeatureShowcase from '@site/src/components/FeatureShowcase';
+import ArchitectureHighlights from '@site/src/components/ArchitectureHighlights';
+import CTASection from '@site/src/components/CTASection';
 import Heading from '@theme/Heading';
 import { useEffect, useState } from 'react';
 
@@ -82,7 +84,7 @@ function HomepageHeader() {
   );
 }
 
-export default function Home(): JSX.Element {
+export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
@@ -90,7 +92,9 @@ export default function Home(): JSX.Element {
       description="开源、自主可控的API设计平台，让数据接口开发更简单、更高效">
       <HomepageHeader />
       <main className={styles.main}>
-        <HomepageFeatures />
+        <FeatureShowcase />
+        <ArchitectureHighlights />
+        <CTASection />
       </main>
     </Layout>
   );

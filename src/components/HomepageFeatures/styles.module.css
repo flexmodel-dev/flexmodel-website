@@ -15,7 +15,7 @@
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -51,7 +51,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  background: linear-gradient(90deg, #60a5fa, #2563eb, #1d4ed8);
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -87,7 +87,7 @@
 
 .featureCard:hover .featureSvg {
   transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(0 15px 30px rgba(102, 126, 234, 0.4));
+  filter: drop-shadow(0 15px 30px rgba(37, 99, 235, 0.4));
 }
 
 .iconGlow {
@@ -97,7 +97,7 @@
   transform: translate(-50%, -50%);
   width: 140px;
   height: 140px;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
   border-radius: 50%;
   opacity: 0;
   transition: all 0.3s ease;
@@ -123,7 +123,7 @@
 }
 
 .featureCard:hover .featureTitle {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -1,33 +1,16 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import { useEffect, useState } from 'react';
+import type {ReactNode} from 'react';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
   Svg: React.ComponentType<React.ComponentProps<'svg'>>;
-  description: JSX.Element;
+  description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
-  {
-    title: '无代码数据建模',
-    Svg: require('@site/static/img/undraw_developer_activity_re_39tg.svg').default,
-    description: (
-        <>
-          运行时动态创建数据模型，自动生成 GraphQL 与 REST API，支持 10+ 数据库，让数据服务开发变得前所未有地简单。
-        </>
-    ),
-  },
-  {
-    title: '可视化流程编排',
-    Svg: require('@site/static/img/undraw_add_information_j2wg.svg').default,
-    description: (
-        <>
-          基于 BPMN 风格的低代码流程设计器，通过拖拽节点构建后端业务逻辑，支持服务任务、排排网关、调用活动等节点类型。
-        </>
-    ),
-  },
   {
     title: '分布式任务调度',
     Svg: require('@site/static/img/undraw_best_place_re_lne9.svg').default,
@@ -38,29 +21,47 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '对象存储管理',
-    Svg: require('@site/static/img/undraw_add_information_j2wg.svg').default,
-    description: (
-        <>
-          统一抽象 S3、OSS 与本地存储，轻松管理 Bucket 与文件对象，上传下载一键完成。
-        </>
-    ),
-  },
-  {
-    title: '统一身份认证',
+    title: '云函数运行时',
     Svg: require('@site/static/img/undraw_developer_activity_re_39tg.svg').default,
     description: (
         <>
-          完整 RBAC 权限体系，支持 OIDC、LDAP、社交账号及 JWT 安全验证，项目级身份提供商灵活配置。
+          基于 Deno + Hono.js 的 Worker 隔离执行环境，安全运行自定义函数，灵活扩展业务边界。
         </>
     ),
   },
   {
-    title: 'AI 工具集成',
+    title: '多协议 API 开放',
+    Svg: require('@site/static/img/undraw_add_information_j2wg.svg').default,
+    description: (
+        <>
+          同一套数据模型同时开放 REST、GraphQL、MCP、WebSocket 与 SSE，满足多样化接入场景。
+        </>
+    ),
+  },
+  {
+    title: '私有化部署',
+    Svg: require('@site/static/img/undraw_developer_activity_re_39tg.svg').default,
+    description: (
+        <>
+          开源、支持私有化部署，数据完全掌握在自己手中，不被平台锁定，自主可控、安全合规。
+        </>
+    ),
+  },
+  {
+    title: '多数据库适配',
+    Svg: require('@site/static/img/undraw_add_information_j2wg.svg').default,
+    description: (
+        <>
+          深度适配 MySQL、PostgreSQL、Oracle、达梦、人大金仓等 10+ 主流及国产数据库，一次建模多处运行。
+        </>
+    ),
+  },
+  {
+    title: '生产级可靠性',
     Svg: require('@site/static/img/undraw_best_place_re_lne9.svg').default,
     description: (
         <>
-          基于 MCP 协议开放 15 个核心工具，让 AI 客户端直接管理项目、建模与数据，赋能智能应用开发。
+          HikariCP 连接池、GraalVM 引擎与审计日志保驾护航，核心能力经生产环境严格验证，稳定可靠。
         </>
     ),
   },
@@ -92,14 +93,14 @@ function Feature({title, Svg, description, index}: FeatureItem & {index: number}
   );
 }
 
-export default function HomepageFeatures(): JSX.Element {
+export default function HomepageFeatures() {
   return (
       <section className={styles.features}>
         <div className="container">
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>核心特性</h2>
+            <h2 className={styles.sectionTitle}>更多能力，开箱即用</h2>
             <p className={styles.sectionSubtitle}>
-              强大的功能，简单的操作，面向下一代应用的统一数据访问层
+              除核心功能外，Flexmodel 还内置了一系列覆盖数据服务全场景的基础能力
             </p>
           </div>
           <div className="row">
