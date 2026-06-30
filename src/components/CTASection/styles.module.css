@@ -1,0 +1,167 @@
+.section {
+  padding: 4rem 0 6rem;
+}
+
+.card {
+  position: relative;
+  border-radius: 28px;
+  padding: 4.5rem 2rem;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #172554 0%, #1e3a8a 50%, #1e293b 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.cardVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+html[data-theme='light'] .card {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.35) 0%,
+    transparent 70%
+  );
+  top: -150px;
+  left: -100px;
+  filter: blur(40px);
+}
+
+.glow2 {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(96, 165, 250, 0.3) 0%,
+    transparent 70%
+  );
+  bottom: -150px;
+  right: -80px;
+  filter: blur(40px);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+  line-height: 1.25;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.75;
+  margin: 0 0 2.5rem;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  background: #ffffff;
+  color: #1a1a2e;
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+}
+
+html[data-theme='light'] .primaryButton {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  color: #1a1a2e;
+  text-decoration: none;
+}
+
+html[data-theme='light'] .primaryButton:hover {
+  color: #ffffff;
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: transform 0.3s ease, background 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 768px) {
+  .section {
+    padding: 3rem 0 4rem;
+  }
+
+  .card {
+    padding: 3rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.7rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    justify-content: center;
+  }
+}

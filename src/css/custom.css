@@ -131,12 +131,10 @@ html[data-theme='dark'] {
    全局主题样式
    ========================================================= */
 html[data-theme='light'] {
-    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 60%, var(--bg-tertiary) 100%);
     color: var(--text-primary);
 }
 
 html[data-theme='dark'] {
-    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     color: var(--text-primary);
 }
 
@@ -175,7 +173,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: transparent;
+    background: var(--bg-primary);
 }
 
 /* Selection color */
