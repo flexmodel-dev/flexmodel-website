@@ -10,11 +10,12 @@
   overflow: hidden;
   background: linear-gradient(135deg, #172554 0%, #1e3a8a 50%, #1e293b 100%);
   border: 1px solid rgba(59, 130, 246, 0.3);
-  opacity: 0;
-  transform: translateY(30px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
+/* 保留动画类但不再依赖它控制可见性，避免 SSR/静态生成后空白 */
 .cardVisible {
   opacity: 1;
   transform: translateY(0);

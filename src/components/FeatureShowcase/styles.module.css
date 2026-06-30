@@ -52,8 +52,8 @@
   grid-template-columns: 1fr 1.15fr;
   align-items: center;
   gap: 4rem;
-  opacity: 0;
-  transform: translateY(40px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
@@ -69,6 +69,7 @@
   order: 1;
 }
 
+/* 保留动画类但不再依赖它控制可见性，避免 SSR/静态生成后图片/文字空白 */
 .showcaseRowVisible {
   opacity: 1;
   transform: translateY(0);

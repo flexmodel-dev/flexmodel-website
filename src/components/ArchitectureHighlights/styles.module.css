@@ -52,8 +52,8 @@
   border: 1px solid var(--card-border);
   border-radius: 20px;
   padding: 2rem 1.75rem;
-  opacity: 0;
-  transform: translateY(24px);
+  opacity: 1;
+  transform: translateY(0);
   transition: opacity 0.6s ease, transform 0.6s ease,
     box-shadow 0.3s ease, border-color 0.3s ease;
   position: relative;
@@ -83,6 +83,7 @@
   transform: scaleX(1);
 }
 
+/* 保留动画类但不再依赖它控制可见性，避免 SSR/静态生成后空白 */
 .cardVisible {
   opacity: 1;
   transform: translateY(0);
