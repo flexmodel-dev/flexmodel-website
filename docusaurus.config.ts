@@ -102,7 +102,7 @@ const config: Config = {
         },*/
         {to: '/docs/tutorial/intro', sidebarId: 'tutorialSidebar', label: '文档', position: 'left'},
         {to: '/docs/tutorial/getting-started/guide', label: '快速入门', position: 'left'},
-        {href: 'https://metacode.wetech.tech/', label: '零代码平台', position: 'left'},
+        {href: 'https://metacode.wetech.tech/', label: '低代码平台', position: 'left'},
         /*   {to: '/blog', label: 'Blog', position: 'left'},*/
         {
           href: 'https://preview.flexmodel.dev',
