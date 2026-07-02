@@ -15,15 +15,13 @@ npm install @flexmodel/sdk
 ## 快速开始
 
 ```typescript
-import { FlexmodelClient } from '@flexmodel/sdk'
+import { data, configure } from '@flexmodel/sdk'
 
-const client = new FlexmodelClient({
-  apiKey: 'fm_ak_xxxxx',
-  projectId: 'my-project',
-})
+// 配置（可选，默认连接 localhost:8080）
+configure({ apiKey: 'fm_ak_xxxxx', projectId: 'my-project' })
 
 // 查询
-const { list, total } = await client.data.from('Student').findMany({
+const { list, total } = await data.Student.findMany({
   where: { classId: { _eq: 1 }, age: { _gt: 15 } },
   orderBy: 'name',
   page: 1,
@@ -31,43 +29,122 @@ const { list, total } = await client.data.from('Student').findMany({
 })
 
 // 获取单条
-const student = await client.data.from('Student').findOne('001', { expand: ['classId'] })
+const student = await data.Student.findOne('001', { expand: ['classId'] })
 
 // 创建
-const created = await client.data.from('Student').create({ name: 'Alice', age: 16 })
+const created = await data.Student.create({ name: 'Alice', age: 16 })
 
 // 批量创建
-const batch = await client.data.from('Student').createMany([
+const batch = await data.Student.createMany([
   { name: 'Alice', age: 16 },
   { name: 'Bob', age: 17 },
 ])
 
 // 全量更新
-await client.data.from('Student').update(1, { data: { name: 'Alicia' } })
+await data.Student.update(1, { data: { name: 'Alicia' } })
 
 // 批量更新（每条记录必须包含 id 字段）
-await client.data.from('Student').updateMany({ data: [
+await data.Student.updateMany({ data: [
   { id: 1, name: 'Alicia' },
   { id: 2, name: 'Bob Updated' },
 ] })
 
 // 部分更新
-await client.data.from('Student').merge(1, { data: { name: 'Alicia' } })
+await data.Student.merge(1, { data: { name: 'Alicia' } })
 
 // 删除
-await client.data.from('Student').delete(1)
+await data.Student.delete(1)
 
 // 批量删除
-await client.data.from('Student').deleteMany({ ids: [1, 2, 3] })
+await data.Student.deleteMany({ ids: [1, 2, 3] })
 
 // 计数
-const count = await client.data.from('Student').count({ where: { age: { _gt: 18 } } })
+const count = await data.Student.count({ where: { age: { _gt: 18 } } })
 ```
 
-## 客户端初始化
+也可以使用 `data.from()` 显式选择模型：
 
 ```typescript
-const client = new FlexmodelClient(options?: FlexmodelClientOptions)
+const { list, total } = await data.from('Student').findMany({
+  where: { classId: { _eq: 1 }, age: { _gt: 15 } },
+})
+```
+
+## 单例便捷 API
+
+SDK 提供预初始化的全局单例，通过 `data` 和 `configure` 直接使用：
+
+### `data`
+
+数据操作命名空间的便捷导出，直接引用全局单例的 `data` 属性：
+
+```typescript
+import { data } from '@flexmodel/sdk'
+
+// Proxy 属性访问（推荐）
+await data.Student.findMany()
+
+// from() 显式选择
+await data.from('Student').findMany()
+```
+
+### `configure(options?)`
+
+配置全局单例的便捷函数，修改 `baseURL`、`apiKey`、`authToken`、`projectId`：
+
+```typescript
+import { data, configure } from '@flexmodel/sdk'
+
+configure({
+  baseURL: 'https://api.example.com',
+  apiKey: 'fm_ak_xxxxx',
+  projectId: 'my-project',
+})
+
+const students = await data.Student.findMany()
+```
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `baseURL` | `string` | API 地址，浏览器默认同源，Node/Deno 需提供 |
+| `apiKey` | `string` | API Key（`fm_ak_` 前缀），提供后所有请求自动注入认证头 |
+| `authToken` | `string` | 认证令牌（优先级高于 apiKey），传入 undefined 清除 |
+| `projectId` | `string` | 数据 API 的默认项目 ID，可在 per-call 时通过 `.project()` 覆盖 |
+
+### `data.schema<T>()`
+
+类型窄化方法，传入 Schema interface 后获得模型级类型推断：
+
+```typescript
+import { data } from '@flexmodel/sdk'
+
+interface MySchema {
+  Student: { id: number; name: string; age: number }
+}
+
+const typed = data.schema<MySchema>()
+typed.Student.findMany()  // Student 有类型提示
+```
+
+## FlexmodelClient（显式实例化）
+
+需要多实例或隔离场景时，可手动创建 `FlexmodelClient`：
+
+```typescript
+import { FlexmodelClient } from '@flexmodel/sdk'
+
+const client = new FlexmodelClient({
+  apiKey: 'fm_ak_xxxxx',
+  projectId: 'my-project',
+})
+
+await client.data.Student.findMany()
+```
+
+### 客户端初始化
+
+```typescript
+new FlexmodelClient(options?: FlexmodelClientOptions)
 ```
 
 | 参数 | 类型 | 必填 | 说明 |
@@ -90,30 +167,30 @@ const client = new FlexmodelClient({
 
 ## 数据操作命名空间
 
-所有数据 CRUD 通过 `client.data` 命名空间访问：
+所有数据 CRUD 通过 `data` 命名空间访问：
 
-### `client.data.from(model)`
-
-显式选择目标模型，返回 `ModelHandle`：
-
-```typescript
-const handle = client.data.from('Student')
-await handle.findMany({ where: { age: { _eq: 18 } } })
-```
-
-### `client.data.Student`（Proxy 属性访问）
+### `data.Student`（Proxy 属性访问）
 
 Proxy 拦截属性访问，运行时等价于 `from()`：
 
 ```typescript
-// client.data.Student === client.data.from('Student')
-await client.data.Student.findMany({ where: { age: { _eq: 18 } } })
+// data.Student === data.from('Student')
+await data.Student.findMany({ where: { age: { _eq: 18 } } })
+```
+
+### `data.from(model)`
+
+显式选择目标模型，返回 `ModelHandle`：
+
+```typescript
+const handle = data.from('Student')
+await handle.findMany({ where: { age: { _eq: 18 } } })
 ```
 
 ### `project()` 覆盖 projectId
 
 ```typescript
-await client.data.from('Student').project('other-project').findMany({})
+await data.Student.project('other-project').findMany({})
 ```
 
 ## 便捷方法
@@ -149,7 +226,7 @@ interface FindManyOptions<T> {
 ```
 
 ```typescript
-const result = await client.data.from('Student').findMany({
+const result = await data.Student.findMany({
   where: { age: { _gte: 18 } },
   orderBy: 'name:DESC',
   page: 1,
@@ -161,23 +238,23 @@ const result = await client.data.from('Student').findMany({
 ### findOne
 
 ```typescript
-const student = await client.data.from('Student').findOne('001', { expand: ['classId'] })
+const student = await data.Student.findOne('001', { expand: ['classId'] })
 ```
 
 ### 创建
 
 ```typescript
 // 单条
-const created = await client.data.from('Student').create({ name: 'Alice', age: 16 })
+const created = await data.Student.create({ name: 'Alice', age: 16 })
 
 // 批量（传入数组自动调用 /batch 端点）
-const batch = await client.data.from('Student').create([
+const batch = await data.Student.create([
   { name: 'Alice', age: 16 },
   { name: 'Bob', age: 17 },
 ])
 
 // 显式批量创建
-const batch2 = await client.data.from('Student').createMany([
+const batch2 = await data.Student.createMany([
   { name: 'Alice', age: 16 },
   { name: 'Bob', age: 17 },
 ])
@@ -188,7 +265,7 @@ const batch2 = await client.data.from('Student').createMany([
 每条记录必须包含 `id` 字段：
 
 ```typescript
-const updated = await client.data.from('Student').updateMany({
+const updated = await data.Student.updateMany({
   data: [
     { id: 1, name: 'Alicia' },
     { id: 2, name: 'Bob Updated' },
@@ -199,7 +276,7 @@ const updated = await client.data.from('Student').updateMany({
 ### 批量删除
 
 ```typescript
-const deletedCount = await client.data.from('Student').deleteMany({ ids: [1, 2, 3] })
+const deletedCount = await data.Student.deleteMany({ ids: [1, 2, 3] })
 ```
 
 > 批量操作上限为 **200 条**记录，超出将返回 HTTP 400 错误。
@@ -207,7 +284,7 @@ const deletedCount = await client.data.from('Student').deleteMany({ ids: [1, 2, 
 ### 计数
 
 ```typescript
-const total = await client.data.from('Student').count({ where: { age: { _gt: 18 } } })
+const total = await data.Student.count({ where: { age: { _gt: 18 } } })
 ```
 
 ## 过滤器 DSL
@@ -270,7 +347,7 @@ const where = filterOr(
   filterAnd(filterEq('classId', 2), filterLt('age', 12)),
 )
 
-await client.data.from('Student').findMany({ where })
+await data.Student.findMany({ where })
 ```
 
 ## 链式构建器
@@ -278,7 +355,7 @@ await client.data.from('Student').findMany({ where })
 复杂查询可使用 `ModelHandle.query()` 创建链式构建器：
 
 ```typescript
-const result = await client.data.from('Student').query()
+const result = await data.Student.query()
   .eq('age', 18)
   .gt('score', 60)
   .where((f) => f.or(f.eq('classId', 1), f.eq('classId', 2)))
@@ -310,7 +387,7 @@ const result = await client.data.from('Student').query()
 
 ## 类型安全
 
-通过 `schema<T>()` 获得模型级类型推断：
+通过 `data.schema<T>()` 或 `client.schema<T>()` 获得模型级类型推断：
 
 ```typescript
 interface Student {
@@ -324,16 +401,19 @@ interface MySchema {
   Student: Student
 }
 
-const db = client.schema<MySchema>()
+// 单例方式
+const typed = data.schema<MySchema>()
+typed.Student.findMany({ where: { age: { _eq: 18 } } })
 
-// IDE 自动补全模型名和字段
+// 显式实例化方式
+const db = client.schema<MySchema>()
 db.data.Student.findMany({ where: { age: { _eq: 18 } } })
 ```
 
 无 schema 时同样可用（字段名为 `string`）：
 
 ```typescript
-client.data.from('Student').findMany({ where: { age: { _eq: 18 } } })
+data.Student.findMany({ where: { age: { _eq: 18 } } })
 ```
 
 ## 错误处理
@@ -342,7 +422,7 @@ client.data.from('Student').findMany({ where: { age: { _eq: 18 } } })
 import { FlexmodelApiError, FlexmodelAuthError } from '@flexmodel/sdk'
 
 try {
-  await client.data.from('Student').findOne(999)
+  await data.Student.findOne(999)
 } catch (err) {
   if (err instanceof FlexmodelApiError) {
     console.log(err.status, err.code, err.message)
