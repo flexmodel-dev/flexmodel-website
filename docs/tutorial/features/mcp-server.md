@@ -87,7 +87,7 @@ MCP 端点需要通过 URL query 参数 `api_key` 传递 API Key 进行身份认
 
 ### 其他 MCP 客户端
 
-任何支持 MCP 协议的客户端都可以通过 `/api/mcp` 端点连接到 Flexmodel，在 URL 中携带 `api_key` 参数完成认证。MCP 工具的参数格式与 REST API 一致，例如 `query_records` 的 filter 参数使用与 [查询条件](../records.md#过滤filter) 相同的 DSL 语法。
+任何支持 MCP 协议的客户端都可以通过 `/api/mcp` 端点连接到 Flexmodel，在 URL 中携带 `api_key` 参数完成认证。MCP 工具的参数格式与 REST API 一致，例如 `query_records` 的 filter 参数使用与 [查询条件](records.md#过滤filter) 相同的 DSL 语法。
 
 ## 使用场景
 
