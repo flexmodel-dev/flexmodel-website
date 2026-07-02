@@ -65,9 +65,8 @@ Flexmodel 支持三种模型类型：
 
 **ID**
 
-| 属性 | 类型 | 可选 | 描述 |
-|------|------|------|------|
-| generatedValue | String | 否 | 主键生成策略，可配置 `AUTO_INCREMENT` \| `UUID` \| `ULID` \| `BIGINT_NOT_GENERATED` \| `STRING_NOT_GENERATED`，默认值为 `AUTO_INCREMENT` |
+| 属性 | 类型 | 可选 | 描述                                                           |
+|------|------|------|--------------------------------------------------------------|
 
 **String**
 
@@ -94,7 +93,6 @@ Flexmodel 支持三种模型类型：
 
 | 属性 | 类型 | 可选 | 描述 |
 |------|------|------|------|
-| generatedValue | String | 是 | 自动生成当前日期时间，可配置 `NOW_ON_CREATE` \| `NOW_ON_UPDATE` \| `NOW_ON_CREATE_AND_UPDATE` |
 
 **Enum**
 
@@ -431,6 +429,7 @@ model Classes {
   classCode: String @unique @length(255),
   className?: String @default("A班级"),
   students: Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: true),
+  @comment("班级")
 }
 
 // 学生模型
@@ -448,6 +447,7 @@ model Student {
   @index(name: "IDX_studentName", unique: false, fields: [classId, studentName: (sort: "desc")]),
   @index(unique: false, fields: [studentName]),
   @index(unique: false, fields: [classId]),
+  @comment("学生")
 }
 
 // 学生详情模型
@@ -455,13 +455,15 @@ model StudentDetail {
   id: String @id @default(autoIncrement()),
   studentId?: Long,
   description?: String @length(255),
+  @comment("学生详情")
 }
 
 // 用户性别枚举
 enum UserGender {
   UNKNOWN,
   MALE,
-  FEMALE
+  FEMALE,
+  @comment("用户性别")
 }
 
 // 用户爱好枚举
@@ -469,7 +471,8 @@ enum user_interest {
   chang,
   tiao,
   rap,
-  daLanQiu
+  daLanQiu,
+  @comment("用户爱好")
 }
 ```
 
