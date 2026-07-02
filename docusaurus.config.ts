@@ -101,7 +101,7 @@ const config: Config = {
           label: '使用手册',
         },*/
         {to: '/docs/tutorial/intro', sidebarId: 'tutorialSidebar', label: '文档', position: 'left'},
-        {to: '/docs/api', label: 'API', sidebarId: 'apiSidebar', position: 'left'},
+        {to: '/docs/tutorial/getting-started/guide', label: '快速入门', position: 'left'},
         /*   {to: '/blog', label: 'Blog', position: 'left'},*/
         {
           href: 'https://preview.flexmodel.dev',
