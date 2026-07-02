@@ -212,7 +212,7 @@ const total = await client.data.from('Student').count({ where: { age: { _gt: 18 
 
 ## 过滤器 DSL
 
-`where` 选项使用 JSON 过滤器 DSL，与后端 [查询条件](/docs/api/definition/condition)完全对应：
+`where` 选项使用 JSON 过滤器 DSL，与后端 [查询条件](../records.md#过滤filter)完全对应：
 
 ### 字段操作符
 
