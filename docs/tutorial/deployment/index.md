@@ -4,11 +4,10 @@
 
 ## 部署要求
 
-1. 硬件配置要求：内存至少 1GB，磁盘 40GB
+1. 硬件配置要求：内存至少 2GB，磁盘 40GB
 
-2. 运行环境要求：Linux
+2. 运行环境要求：Linux + Docker
 
-## Docker
 
 需要通过jdbc连接数据源
 
@@ -36,12 +35,6 @@
 |---------|------|------|
 | MongoDB | 5.0  |      |
 
-```shell
-docker run -p 8080:8080 -e JAVA_OPTS="-Dfile.encoding=UTF-8 -Duser.timezone=GMT+08 -Dflexmodel.datasource.dk-kind=mysql -Dflexmodel.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE} -Dflexmodel.datasource.username=root -Dflexmodel.datasource.password=${MYSQL_ROOT_PASSWORD}" -t cjbi/flexmodel-server:latest 
-```
-
-## Docker-compose
-
 请见Github代码仓库，以下为docker-compose部署示例：
 
-https://github.com/flexmodel-dev/flexmodel-quickstarts/tree/main/docker-compose
+https://github.com/flexmodel-dev/flexmodel/deploy
