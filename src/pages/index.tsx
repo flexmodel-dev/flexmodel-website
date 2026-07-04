@@ -6,7 +6,7 @@ import FeatureShowcase from '@site/src/components/FeatureShowcase';
 import ArchitectureHighlights from '@site/src/components/ArchitectureHighlights';
 import CTASection from '@site/src/components/CTASection';
 import Heading from '@theme/Heading';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 
 import styles from './index.module.css';
 
@@ -30,7 +30,7 @@ function HomepageHeader() {
       <div className="container">
         <div className={clsx(styles.heroContent, isVisible && styles.fadeIn)}>
           <div className={styles.badgeContainer}>
-            <span className={styles.badge}>🚀 数据驱动</span>
+            <span className={styles.badge}>🚀 事件驱动</span>
             <span className={styles.badge}>⚡ 高性能</span>
             <span className={styles.badge}>🔒 自主可控</span>
           </div>
