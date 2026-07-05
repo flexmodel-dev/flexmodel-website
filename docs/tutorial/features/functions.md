@@ -75,14 +75,14 @@ const records = await client.query('dev_test', 'Student', { page: 1, size: 10 })
 
 云函数相关的 REST API 基础路径为 `/api/projects/{projectId}/functions`：
 
-| 端点 | 说明 |
-|------|------|
-| `GET /functions` | 获取函数列表 |
-| `POST /functions` | 创建函数 |
-| `PUT /functions/{name}` | 更新函数 |
-| `DELETE /functions/{name}` | 删除函数 |
+| 端点                              | 说明                      |
+|---------------------------------|-------------------------|
+| `GET /functions`                | 获取函数列表                  |
+| `POST /functions`               | 创建函数                    |
+| `PUT /functions/{name}`         | 更新函数                    |
+| `DELETE /functions/{name}`      | 删除函数                    |
 | `POST /functions/{name}/deploy` | 部署函数到 Functions Runtime |
-| `POST /api/runtime/projects/{projectId}/functions/{name}` | 调用函数 |
-| `GET /function-templates` | 获取函数模板列表 |
+| `POST /functions/{name}/invoke` | 调用函数                    |
+| `GET /function-templates`       | 获取函数模板列表                |
 
 更多端点请参考 Swagger UI (`/q/swagger-ui`)。
