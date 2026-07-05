@@ -36,9 +36,9 @@ export default function CTASection() {
           <div className={styles.content}>
             <h2 className={styles.title}>准备好使用 Flexmodel 了吗？</h2>
             <p className={styles.subtitle}>
-              1 分钟部署专属实例，立即体验下一代统一数据访问层。
+                AI 时代，别让自由散漫的代码拖累系统演进。
               <br />
-              开源、自主可控，数据始终掌握在你自己手中。
+                1 分钟部署专属实例，用统一规范构建高质量的数据服务——开源、自主可控，数据始终掌握在你自己手中。
             </p>
             <div className={styles.buttons}>
               <Link

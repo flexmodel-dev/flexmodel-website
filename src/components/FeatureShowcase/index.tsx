@@ -1,5 +1,5 @@
-import {useEffect, useRef, useState} from 'react';
 import type {ReactNode} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
@@ -197,11 +197,12 @@ export default function FeatureShowcase() {
         <div className={styles.sectionHeader}>
           <span className={styles.sectionKicker}>产品功能</span>
           <h2 className={styles.sectionTitle}>
-            一个平台，覆盖数据服务的全链路能力
+              用统一规范，遏制系统熵增
           </h2>
           <p className={styles.sectionSubtitle}>
-            从数据建模到流程编排，从云函数到 AI 集成，Flexmodel
-            为下一代应用提供开箱即用的统一数据访问层。
+              AI 虽然拉低了代码的编写门槛，但复杂业务的维护成本依旧指数级增长。
+              Flexmodel 以统一规范为底座，将数据建模、流程编排、云函数、AI
+              集成纳入标准化轨道——让每一行业务逻辑都<strong>可视、可控、可追溯</strong>。
           </p>
         </div>
         <div className={styles.showcaseList}>

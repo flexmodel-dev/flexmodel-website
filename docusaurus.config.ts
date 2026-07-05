@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Flexmodel',
-  tagline: '面向下一代应用程序的统一数据访问层，开源、免费、支持私有化部署',
+  tagline: 'AI 时代不可或缺的统一数据访问层——以统一规范构筑全局底座，从源头消灭技术黑盒',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here

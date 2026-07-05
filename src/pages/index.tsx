@@ -30,9 +30,10 @@ function HomepageHeader() {
       <div className="container">
         <div className={clsx(styles.heroContent, isVisible && styles.fadeIn)}>
           <div className={styles.badgeContainer}>
-            <span className={styles.badge}>🚀 事件驱动</span>
+            <span className={styles.badge}>🎯 统一规范</span>
+            <span className={styles.badge}>🤖 权限可控</span>
             <span className={styles.badge}>⚡ 高性能</span>
-            <span className={styles.badge}>🔒 自主可控</span>
+            <span className={styles.badge}>💎 云原生</span>
           </div>
           
           <Heading as="h1" className={styles.heroTitle}>
@@ -44,7 +45,9 @@ function HomepageHeader() {
           </p>
           
           <div className={styles.heroDescription}>
-            开源、自主可控的API设计平台，让数据接口开发更简单、更高效
+            AI 降低了代码的编写成本，却无法阻止维护成本的指数级飙升。<br/>
+            当复杂业务缺乏绝对约束，自由散漫的高代码只会加速系统熵增。<br/>
+            Flexmodel 以<strong>统一规范</strong>构筑全局底座，从源头消灭技术黑盒
           </div>
           
           <div className={styles.buttons}>
@@ -88,8 +91,8 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title} - 开源、自主可控的API设计平台`}
-      description="开源、自主可控的API设计平台，让数据接口开发更简单、更高效">
+        title={`${siteConfig.title} - AI 时代统一数据访问层`}
+        description="AI 时代不可或缺的统一数据访问层，以统一规范构筑全局底座，从源头消灭技术黑盒">
       <HomepageHeader />
       <main className={styles.main}>
         <FeatureShowcase />

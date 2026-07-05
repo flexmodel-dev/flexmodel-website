@@ -86,34 +86,29 @@ html[data-theme='light'] .card {
 }
 
 .primaryButton {
-  background: #ffffff;
-  color: #1a1a2e;
+    background: rgba(255, 255, 255, 0.92);
+    color: #1d4ed8;
   padding: 0.9rem 2rem;
   border-radius: 50px;
   text-decoration: none;
   font-weight: 700;
   font-size: 1.05rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   border: none;
 }
 
-html[data-theme='light'] .primaryButton {
-  background: #1a1a2e;
-  color: #ffffff;
-}
-
-.primaryButton:hover {
+.primaryButton:hover,
+.primaryButton:active,
+.primaryButton:focus-visible,
+.primaryButton:visited {
+    background: #ffffff;
+    color: #1d4ed8;
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
-  color: #1a1a2e;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
   text-decoration: none;
-}
-
-html[data-theme='light'] .primaryButton:hover {
-  color: #ffffff;
 }
 
 .secondaryButton {

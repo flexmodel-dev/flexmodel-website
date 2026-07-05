@@ -11,8 +11,8 @@ type Highlight = {
 const highlights: Highlight[] = [
   {
     icon: '☕',
-    title: 'Java 25 + Quarkus 3',
-    description: '基于最新的 Java 25 与 Quarkus 3 框架，云原生、启动快、内存占用低。',
+    title: 'Java 25 + Quarkus 3 + Native 编译',
+    description: '基于最新 Java 25 与 Quarkus 3，适配 GraalVM Native Image 编译和云原生环境部署，毫秒级启动、超低内存占用。',
   },
   {
     icon: '🧩',
@@ -81,9 +81,9 @@ export default function ArchitectureHighlights() {
       <div className="container">
         <div className={styles.header}>
           <span className={styles.kicker}>技术架构</span>
-          <h2 className={styles.title}>为下一代应用而生</h2>
+          <h2 className={styles.title}>统一规范，全局底座</h2>
           <p className={styles.subtitle}>
-            现代化的技术栈与模型驱动架构，兼顾开发效率与运行性能。
+            以模型驱动架构构筑全局底座，消灭隐藏在自由代码背后的技术黑盒，让每一条业务规则都透明可控。
           </p>
         </div>
         <div className={styles.grid}>
