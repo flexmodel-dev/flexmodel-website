@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
-import { useEffect, useState } from 'react';
 import type {ReactNode} from 'react';
+import {useEffect, useState} from 'react';
 import styles from './styles.module.css';
 
 type FeatureItem = {
@@ -61,7 +61,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_best_place_re_lne9.svg').default,
     description: (
         <>
-          HikariCP 连接池、GraalVM 引擎与审计日志保驾护航，核心能力经生产环境严格验证，稳定可靠。
+            Agroal 连接池、QuickJS 引擎与审计日志保驾护航，核心能力经生产环境严格验证，稳定可靠。
         </>
     ),
   },

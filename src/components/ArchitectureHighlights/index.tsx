@@ -32,7 +32,7 @@ const highlights: Highlight[] = [
   {
     icon: '⚡',
     title: '高性能',
-    description: 'HikariCP 连接池 + GraalVM JavaScript 引擎，保障高并发下的稳定性能。',
+    description: 'Agroal 连接池 + QuickJS 引擎，保障高并发下的稳定性能。',
   },
   {
     icon: '🛡️',
