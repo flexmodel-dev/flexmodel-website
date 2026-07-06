@@ -22,7 +22,7 @@ AI 时代的正确解法。
 7. 对象存储：统一抽象 S3 / OSS / 本地存储，Bucket 与文件对象可视化管理
 8. MCP 协议：基于 MCP 开放核心工具，让 AI 客户端直接管理项目与数据
 9. 云函数：Deno Functions Runtime + Worker 隔离执行，TypeScript 原生支持（实验性）
-10. Native 编译：GraalVM Native Image 支持，毫秒级启动，内存占用低于 60MB
+10. AOT 编译：GraalVM Native Image 支持，毫秒级启动，内存占用低于 60MB
 
 ### Flexmodel 能做什么？
 

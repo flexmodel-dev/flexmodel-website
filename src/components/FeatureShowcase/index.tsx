@@ -200,7 +200,6 @@ export default function FeatureShowcase() {
               用统一规范，遏制系统熵增
           </h2>
           <p className={styles.sectionSubtitle}>
-              AI 虽然拉低了代码的编写门槛，但复杂业务的维护成本依旧指数级增长。
               Flexmodel 以统一规范为底座，将数据建模、流程编排、云函数、AI
               集成纳入标准化轨道——让每一行业务逻辑都<strong>可视、可控、可追溯</strong>。
           </p>

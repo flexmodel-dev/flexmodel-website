@@ -11,8 +11,8 @@ type Highlight = {
 const highlights: Highlight[] = [
   {
     icon: '☕',
-    title: 'Java 25 + Quarkus 3 + Native 编译',
-    description: '基于最新 Java 25 与 Quarkus 3，适配 GraalVM Native Image 编译和云原生环境部署，毫秒级启动、超低内存占用。',
+    title: 'Java 25 + Quarkus 3 + AOT 编译',
+    description: '基于最新 Java 25 与 Quarkus 3，适配 GraalVM 编译成原生镜像，毫秒级启动、超低内存占用。',
   },
   {
     icon: '🧩',

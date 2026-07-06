@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Flexmodel',
-  tagline: 'AI 时代不可或缺的统一数据访问层——以统一规范构筑全局底座，从源头消灭技术黑盒',
+  tagline: 'AI 时代不可或缺的统一数据访问层',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -15,8 +15,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'metacode-org', // Usually your GitHub org/user name.
-  projectName: 'flexmodel', // Usually your repo name.
+  organizationName: 'flexmodel-dev', // Usually your GitHub org/user name.
+  projectName: 'flexmodel-website', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
