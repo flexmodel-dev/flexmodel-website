@@ -110,7 +110,7 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/flexmodel-dev',
+          href: 'https://github.com/flexmodel-dev/flexmodel',
           label: 'GitHub',
           position: 'right',
         },
