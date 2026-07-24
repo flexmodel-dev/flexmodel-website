@@ -105,11 +105,11 @@ const showcases: Showcase[] = [
     alt: 'Flexmodel 身份认证界面',
   },
   {
-    eyebrow: '云函数 · Functions',
+      eyebrow: '边缘函数 · Functions',
     title: 'Serverless 运行时，安全隔离自定义逻辑',
     description: (
       <>
-        基于 Deno + Hono.js 的云函数运行时，每个函数在独立 Worker 中安全执行。
+          基于 Deno + Hono.js 的边缘函数运行时，每个函数在独立 Worker 中安全执行。
         支持 TypeScript 原生开发，可与数据模型、流程编排深度联动，灵活扩展业务边界。
       </>
     ),
@@ -120,7 +120,7 @@ const showcases: Showcase[] = [
       '与数据模型、流程、存储深度联动',
     ],
     image: '/img/feature-functions.svg',
-    alt: 'Flexmodel 云函数运行时界面',
+      alt: 'Flexmodel 边缘函数运行时界面',
   },
 ];
 
@@ -200,7 +200,7 @@ export default function FeatureShowcase() {
               用统一规范，遏制系统熵增
           </h2>
           <p className={styles.sectionSubtitle}>
-              Flexmodel 以统一规范为底座，将数据建模、流程编排、云函数、AI
+              Flexmodel 以统一规范为底座，将数据建模、流程编排、边缘函数、AI
               集成纳入标准化轨道——让每一行业务逻辑都<strong>可视、可控、可追溯</strong>。
           </p>
         </div>

@@ -60,10 +60,10 @@ Control Plane 操作（如修改认证配置）如果允许 Data Plane 身份（
 
 ### 支持的 Identity Provider 类型
 
-| 类型       | 标识         | 说明                                                       |
-|----------|------------|----------------------------------------------------------|
+| 类型     | 标识       | 说明                                                            |
+|----------|------------|-----------------------------------------------------------------|
 | OIDC     | `oidc`     | OpenID Connect 协议，通过 Token Introspection 验证 Bearer Token |
-| Function | `function` | 云函数认证，委托给自定义逻辑进行认证                                       |
+| Function | `function` | 边缘函数认证，委托给自定义逻辑进行认证                          |
 
 ### OIDC Provider
 
@@ -92,10 +92,10 @@ OIDC Provider 通过 Token Introspection 验证外部 IdP 签发的 Bearer Token
 
 ### Function Provider
 
-Function Provider 委托认证逻辑给项目内的云函数，适用于非标准认证场景：
+Function Provider 委托认证逻辑给项目内的边缘函数，适用于非标准认证场景：
 
 1. 将完整的认证上下文（Bearer Token、请求方法、URL、Headers、Query 参数）作为函数输入
-2. 调用项目内指定的云函数
+2. 调用项目内指定的边缘函数
 3. 函数返回 HTTP 200 表示认证成功，其他状态码视为失败
 4. 认证成功时，从 response body 中提取 `userId` 字段作为身份标识；若函数未返回 `userId`，则 fallback 为 `function-user`
 

@@ -20,10 +20,10 @@ Flexmodel 内置了分布式任务调度系统，支持多种触发器类型和�
 ### 作业（Job）
 作业是触发器触发后执行的任务。目前支持以下作业类型：
 
-| 作业类型 | 说明 |
-|---------|------|
-| ScheduledFlowExecutionJob | 触发后启动一个流程实例 |
-| ScheduledFunctionExecutionJob | 触发后调用一个云函数 |
+| 作业类型                      | 说明                   |
+|-------------------------------|------------------------|
+| ScheduledFlowExecutionJob     | 触发后启动一个流程实例 |
+| ScheduledFunctionExecutionJob | 触发后调用一个边缘函数 |
 
 ### 执行日志（JobExecutionLog）
 每次作业执行都会记录日志，包含执行状态、耗时、错误信息等。

@@ -21,7 +21,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '云函数运行时',
+      title: '边缘函数运行时',
     Svg: require('@site/static/img/undraw_developer_activity_re_39tg.svg').default,
     description: (
         <>
