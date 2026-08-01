@@ -181,6 +181,46 @@ DELETE /records/{id}
 
 ---
 
+### 批量创建记录
+
+```
+POST /records/batch
+```
+
+**请求体：** `application/json`，JSON 数组，每个元素为一条记录对象。单次最多 200 条。
+
+**响应：** 创建后的记录数组。
+
+---
+
+### 批量更新记录
+
+```
+PUT /records/batch
+```
+
+**请求体：** `application/json`，JSON 数组，每条记录必须包含 `id` 字段。单次最多 200 条。
+
+**响应：** 更新后的记录数组。
+
+---
+
+### 批量删除记录
+
+```
+DELETE /records/batch
+```
+
+**请求体：** `application/json`，ID 字符串数组。单次最多 200 条。
+
+**响应：** 删除的记录数量。
+
+```json
+3
+```
+
+---
+
 ### CRUD 操作
 
 #### 创建记录

@@ -88,6 +88,17 @@ await data.Student.findMany()
 await data.from('Student').findMany()
 ```
 
+### `flexmodelClient`
+
+全局单例实例，`data` 即引用其 `data` 属性。在边缘函数中，运行时会自动调用 `setAuthToken()` 和 `setProjectId()`
+注入上下文，因此函数代码中可直接使用：
+
+```typescript
+import { flexmodelClient } from '@flexmodel/sdk'
+
+const { list } = await flexmodelClient.data.from('Student').findMany({ page: 1, size: 10 })
+```
+
 ### `configure(options?)`
 
 配置全局单例的便捷函数，修改 `baseURL`、`apiKey`、`authToken`、`projectId`：

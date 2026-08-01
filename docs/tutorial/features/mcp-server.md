@@ -14,7 +14,7 @@ Flexmodel 基于 Quarkus MCP Server HTTP 扩展实现 MCP 协议，MCP 服务路
 
 ## 提供的工具
 
-Flexmodel MCP Server 提供 3 组共 15 个工具：
+Flexmodel MCP Server 提供 4 组共 21 个工具：
 
 ### 项目管理工具（ProjectTools）
 
@@ -27,13 +27,14 @@ Flexmodel MCP Server 提供 3 组共 15 个工具：
 
 ### 数据建模工具（ModelingTools）
 
-| 工具名称 | 说明 |
-|---------|------|
-| `list_models` | 列出项目中的所有模型 |
-| `get_model` | 获取模型详情 |
-| `create_entity_model` | 创建实体模型 |
-| `create_enum_model` | 创建枚举模型 |
-| `delete_model` | 删除模型 |
+| 工具名称              | 说明                 |
+|-----------------------|----------------------|
+| `list_models`         | 列出项目中的所有模型 |
+| `get_model`           | 获取模型详情         |
+| `create_entity_model` | 创建实体模型         |
+| `create_enum_model`   | 创建枚举模型         |
+| `delete_model`        | 删除模型             |
+| `execute_fml`         | 执行 FML 脚本        |
 
 ### 数据操作工具（DataTools）
 
@@ -44,6 +45,17 @@ Flexmodel MCP Server 提供 3 组共 15 个工具：
 | `create_record` | 创建数据记录 |
 | `update_record` | 更新数据记录 |
 | `delete_record` | 删除数据记录 |
+
+### 边缘函数工具（FunctionTools）
+
+| 工具名称                  | 说明                         |
+|---------------------------|------------------------------|
+| `list_function_templates` | 列出函数模板                 |
+| `list_functions`          | 列出项目中的边缘函数         |
+| `get_function`            | 获取函数详情                 |
+| `deploy_function`         | 部署函数到 Functions Runtime |
+| `invoke_function`         | 调用函数                     |
+| `delete_function`         | 删除函数                     |
 
 ## 认证
 

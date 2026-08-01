@@ -16,13 +16,13 @@ AI 时代的正确解法。
 1. API 服务：运行时动态生成GraphQL API、REST API，无需手写接口代码
 2. 数据源管理：适配 10+ 主流及国产数据库（MySQL、PostgreSQL、Oracle、达梦、TiDB 等）
 3. 数据建模：可视化模型定义，动态数据库 ORM 数据库映射，模型与物理表一对一绑定，支持字段级约束、索引与关联关系管理
-4. 身份认证：完整 RBAC 权限体系，支持 OIDC / LDAP / 社交账号 / JWT，项目级身份提供商
+4. 身份认证：完整 RBAC 权限体系，支持 OIDC / 边缘函数 / JWT，项目级身份提供商
 5. 流程编排：BPMN 风格可视化流程设计器，后端业务逻辑低代码编排
 6. 任务调度：内置作业执行引擎，支持 Cron、延时及事件驱动调度
 7. 对象存储：统一抽象 S3 / OSS / 本地存储，Bucket 与文件对象可视化管理
 8. MCP 协议：基于 MCP 开放核心工具，让 AI 客户端直接管理项目与数据
 9. 边缘函数：Deno Functions Runtime + Worker 隔离执行，TypeScript 原生支持（实验性）
-10. AOT 编译：GraalVM Native Image 支持，毫秒级启动，内存占用低于 60MB
+10. AOT 编译：GraalVM Native Image 支持，毫秒级启动，内存占用约 70MB
 
 ### Flexmodel 能做什么？
 

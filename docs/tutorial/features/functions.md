@@ -66,14 +66,13 @@ Flexmodel 提供函数模板，帮助用户快速创建常见类型的函数：
 
 ## 函数执行上下文
 
-函数在 Deno Worker 中运行时，可通过 Flexmodel SDK 访问数据：
+函数在 Deno Worker 中运行时，可通过 `@flexmodel/sdk` 访问数据。运行时会自动注入认证令牌和项目 ID，无需手动配置：
 
 ```typescript
-import { FlexmodelClient } from './sdk/flexmodel.ts';
+import {flexmodelClient} from '@flexmodel/sdk';
 
-const client = new FlexmodelClient();
 // 查询数据
-const records = await client.query('dev_test', 'Student', { page: 1, size: 10 });
+const {list} = await flexmodelClient.data.from('Student').findMany({page: 1, size: 10});
 ```
 
 ## API 端点

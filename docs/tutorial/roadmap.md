@@ -14,18 +14,18 @@ Flexmodel 正在持续演进，以下是我们的发展规划。路线图按阶�
 
 ## ✅ 已完成
 
-| 功能                     | 说明                                                                          | 完成时间  |
-|--------------------------|-------------------------------------------------------------------------------|-----------|
-| **动态建模与多数据源**   | 运行时动态建模，支持 SQLite/MySQL/PostgreSQL/Oracle/DB2/MongoDB 等 10+ 数据库 | 2023      |
-| **GraphQL 自动生成**     | 根据数据模型自动生成 GraphQL Schema 和查询接口                                | 2023      |
-| **REST API**             | 标准化 REST API 接口，数据 CRUD 一键生成                                      | 2023      |
-| **身份认证 (Auth)**      | RBAC 权限体系、项目级 OIDC/LDAP/Script 身份提供商、JWT 安全验证               | 2024      |
-| **流程编排 (Flow)**      | 可视化流程设计器，BPMN 风格节点，插件体系，后端业务逻辑编排                   | 2024      |
-| **任务调度 (Job)**       | 内置触发器与作业执行引擎，支持 Cron、延时及事件驱动调度                       | 2024      |
-| **对象存储 (Storage)**   | 统一抽象本地/S3/OSS 存储，完整 S3 实现（AWS SDK v2）                          | 2024–2025 |
-| **MCP Server**           | 15 个 MCP Tools（Project/Modeling/Data），基于 Quarkus MCP Server HTTP 扩展   | 2025      |
-| **Native 编译**          | GraalVM Native Image 支持，原生可执行文件，毫秒级启动，内存降低 80%           | 2026      |
-| **边缘函数 (Functions)** | Deno Functions Runtime + Worker 隔离执行，多文件源码编辑和模板系统            | 2025–2026 |
+| 功能                     | 说明                                                                                 | 完成时间  |
+|--------------------------|--------------------------------------------------------------------------------------|-----------|
+| **动态建模与多数据源**   | 运行时动态建模，支持 SQLite/MySQL/PostgreSQL/Oracle/DB2/MongoDB 等 10+ 数据库        | 2023      |
+| **GraphQL 自动生成**     | 根据数据模型自动生成 GraphQL Schema 和查询接口                                       | 2023      |
+| **REST API**             | 标准化 REST API 接口，数据 CRUD 一键生成                                             | 2023      |
+| **身份认证 (Auth)**      | RBAC 权限体系、项目级 OIDC/Function 身份提供商、JWT 安全验证                         | 2024      |
+| **流程编排 (Flow)**      | 可视化流程设计器，BPMN 风格节点，插件体系，后端业务逻辑编排                          | 2024      |
+| **任务调度 (Job)**       | 内置触发器与作业执行引擎，支持 Cron、延时及事件驱动调度                              | 2024      |
+| **对象存储 (Storage)**   | 统一抽象本地/S3/OSS 存储，完整 S3 实现（AWS SDK v2）                                 | 2024–2025 |
+| **MCP Server**           | 21 个 MCP Tools（Project/Modeling/Data/Function），基于 Quarkus MCP Server HTTP 扩展 | 2025      |
+| **Native 编译**          | GraalVM Native Image 支持，原生可执行文件，毫秒级启动，内存降低 80%                  | 2026      |
+| **边缘函数 (Functions)** | Deno Functions Runtime + Worker 隔离执行，多文件源码编辑和模板系统                   | 2025–2026 |
 
 ---
 

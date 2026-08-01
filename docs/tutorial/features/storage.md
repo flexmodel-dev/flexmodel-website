@@ -35,16 +35,22 @@ Flexmodel 支持两种存储后端：
 
 ```properties
 # 本地存储配置（默认）
-flexmodel.storage.provider=local
-flexmodel.storage.local.path=/data/storage
+flexmodel.storage.type=local
+flexmodel.storage.local-path=/data/storage
 
 # S3 存储配置
-flexmodel.storage.provider=s3
-flexmodel.storage.s3.endpoint=https://s3.amazonaws.com
-flexmodel.storage.s3.region=us-east-1
-flexmodel.storage.s3.access-key=your-access-key
-flexmodel.storage.s3.secret-key=your-secret-key
+flexmodel.storage.type=s3
+flexmodel.storage.s3-access-key=your-access-key
+flexmodel.storage.s3-secret-key=your-secret-key
+flexmodel.storage.s3-bucket=your-bucket
+flexmodel.storage.s3-region=us-east-1
+flexmodel.storage.s3-endpoint=https://s3.amazonaws.com
+flexmodel.storage.s3-path-style=false
+# 只读模式（可选）
+flexmodel.storage.read-only=false
 ```
+
+> S3 客户端连接（凭证、区域等）也可通过 Quarkus 原生的 `quarkus.s3.*` 配置项进行设置。
 
 ## API 端点
 
