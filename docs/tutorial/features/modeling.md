@@ -31,19 +31,19 @@ Flexmodel 支持三种模型类型：
 
 实体字段支持以下数据类型：
 
-| 类型       | 说明 |
-|----------|------|
-| String   | 字符串，可配置长度 |
-| Int      | 32 位整数 |
-| Long     | 64 位长整数 |
+| 类型     | 说明                           |
+|----------|--------------------------------|
+| String   | 字符串，可配置长度             |
+| Int      | 32 位整数                      |
+| Long     | 64 位长整数                    |
 | Float    | 精确的小数类型，常用于财务数据 |
 | Boolean  | 布尔值，仅能存储 true 或 false |
-| DateTime | 日期时间 |
-| Date     | 日期，不包含时间 |
-| Time     | 时间，不包含日期 |
-| JSON     | JSON 对象 |
-| EnumRef  | 枚举引用 |
-| Relation | 模型引用（关联关系） |
+| DateTime | 日期时间                       |
+| Date     | 日期，不包含时间               |
+| Time     | 时间，不包含日期               |
+| JSON     | JSON 对象                      |
+| EnumRef  | 枚举引用                       |
+| ModelRef | 模型引用（关联关系）           |
 
 ### 字段公共属性
 
@@ -101,7 +101,7 @@ Flexmodel 支持三种模型类型：
 | multiple | Boolean | 是 | 是否多条，默认值为 `false` |
 | from | String | 否 | 枚举从哪里来，从枚举定义中获取 |
 
-**Relation**
+**ModelRef**
 
 | 属性 | 类型 | 可选 | 描述 |
 |------|------|------|------|
@@ -181,7 +181,7 @@ FML 语法中常用的字段修饰符（注解）：
 ```json
 {
   "name": "UserGender",
-  "type": "ENUM",
+  "type": "Enum",
   "elements": [
     "UNKNOWN",
     "MALE",
@@ -305,7 +305,7 @@ FML 语法中常用的字段修饰符（注解）：
       },
       {
         "name": "studentDetail",
-        "type": "Relation",
+        "type": "ModelRef",
         "modelName": "Student",
         "unique": false,
         "nullable": true,
@@ -350,7 +350,7 @@ FML 语法中常用的字段修饰符（注解）：
         "nullable": true
       },
       {
-        "type": "Relation",
+        "type": "ModelRef",
         "name": "student",
         "comment": "班级",
         "modelName": "StudentDetail",
