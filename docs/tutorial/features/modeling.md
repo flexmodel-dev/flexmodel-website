@@ -222,7 +222,7 @@ FML 语法中常用的字段修饰符（注解）：
 ```json
 {
   "name": "分组查询",
-  "type": "NATIVE_QUERY",
+  "type": "NativeQuery",
   "statement": "select count(id) as total, gender, max(age) as ageSum from Student group by gender"
 }
 ```
@@ -242,7 +242,7 @@ FML 语法中常用的字段修饰符（注解）：
 
 ### JSON Schema 配置
 
-支持通过 JSON 格式定义模型，对象分为 `ENTITY`、`ENUM` 和 `NATIVE_QUERY` 三种类型。
+支持通过 JSON 格式定义模型，对象分为 `Entity`、`Enum` 和 `NativeQuery` 三种类型。
 
 **实体配置示例：**
 
