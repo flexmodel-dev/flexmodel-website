@@ -70,32 +70,145 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 
 ### 事件结构
 
-每条事件载荷均为 JSON，公共字段：
+每条事件载荷均为 JSON。 **公共字段**（所有事件都包含）：
 
-| 字段         | 类型   | 说明                 |
-|--------------|--------|----------------------|
-| `projectId`  | string | 所属项目 ID          |
-| `caller`     | string | 触发来源标识         |
-| `timestamp`  | long   | 事件产生时间（毫秒） |
-| `routingKey` | string | RabbitMQ routing key |
+| 字段        | 类型   | 说明                 |
+|-------------|--------|----------------------|
+| `projectId` | string | 所属项目 ID          |
+| `caller`    | string | 触发来源标识         |
+| `timestamp` | long   | 事件产生时间（毫秒） |
 
-此外各事件按类型携带额外字段：
+> routing key 不在 JSON 载荷中，而是作为 AMQP 消息的 `routing key` 随 envelope 投递，订阅端从消息信封读取（见下方示例）。
 
-| 事件                           | routing key                        | 额外字段                                                         | 触发时机                         |
-|--------------------------------|------------------------------------|------------------------------------------------------------------|----------------------------------|
-| FlowCreatedEvent               | `flow.created`                     | flowModuleId, flowKey                                            | 定义创建成功后                   |
-| FlowUpdatedEvent               | `flow.updated`                     | flowModuleId                                                     | 定义更新成功后                   |
-| FlowDeployedEvent              | `flow.deployed`                    | flowModuleId, flowDeployId                                       | 定义部署成功后                   |
-| FlowDeletedEvent               | `flow.deleted`                     | flowModuleId                                                     | 定义软删后                       |
-| FlowInstanceStartedEvent       | `flow.instance.started`            | flowDeployId, flowInstanceId, variables                          | 实例启动后                       |
-| FlowInstanceCompletedEvent     | `flow.instance.completed`          | flowDeployId, flowInstanceId, variables                          | 实例完成（COMPLETED/END）后      |
-| FlowInstanceFailedEvent        | `flow.instance.failed`             | flowDeployId, flowInstanceId, error                              | 实例失败后                       |
-| FlowInstanceTerminatedEvent    | `flow.instance.terminated`         | flowInstanceId                                                   | 实例终止后（子流程级联逐个发送） |
-| UserTaskSuspendedEvent         | `flow.usertask.suspended`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, variables | 用户任务挂起前                   |
-| UserTaskCommittedEvent         | `flow.usertask.committed`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey            | 用户任务提交完成                 |
-| UserTaskRollbackSuspendedEvent | `flow.usertask.rollback.suspended` | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey            | 用户任务回滚挂起前               |
+各事件按类型额外携带字段：
 
-> `variables` 为事件产生时刻的流程变量快照（对象），未带 variables 的事件可从流程实例接口补取。
+| 事件                           | routing key                        | 额外字段                                                                         | 触发时机                         |
+|--------------------------------|------------------------------------|----------------------------------------------------------------------------------|----------------------------------|
+| FlowCreatedEvent               | `flow.created`                     | flowModuleId, flowKey                                                            | 定义创建成功后                   |
+| FlowUpdatedEvent               | `flow.updated`                     | flowModuleId                                                                     | 定义更新成功后                   |
+| FlowDeployedEvent              | `flow.deployed`                    | flowModuleId, flowDeployId                                                       | 定义部署成功后                   |
+| FlowDeletedEvent               | `flow.deleted`                     | flowModuleId                                                                     | 定义软删后                       |
+| FlowInstanceStartedEvent       | `flow.instance.started`            | flowDeployId, flowInstanceId, variables                                          | 实例启动后                       |
+| FlowInstanceCompletedEvent     | `flow.instance.completed`          | flowDeployId, flowInstanceId, variables                                          | 实例完成（COMPLETED/END）后      |
+| FlowInstanceFailedEvent        | `flow.instance.failed`             | flowDeployId, flowInstanceId, error                                              | 实例失败后                       |
+| FlowInstanceTerminatedEvent    | `flow.instance.terminated`         | flowInstanceId                                                                   | 实例终止后（子流程级联逐个发送） |
+| UserTaskSuspendedEvent         | `flow.usertask.suspended`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, variables, nodeAttributes | 用户任务挂起前                   |
+| UserTaskCommittedEvent         | `flow.usertask.committed`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务提交完成                 |
+| UserTaskRollbackSuspendedEvent | `flow.usertask.rollback.suspended` | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务回滚挂起前               |
+
+> - `variables`：事件产生时刻的流程变量快照（对象），已做防御性拷贝，不可变。
+> - `nodeAttributes`：节点定义的扩展属性快照（即流程定义中该节点配置的 `properties`
+    ，对象）。用户任务类事件携带，外部订阅者无需回查流程定义仓库即可读取节点配置（如审批人、表单、阈值等）。
+
+### 事件数据结构
+
+下列为各事件 JSON 载荷示例（省略公共字段 `projectId`/`caller`/`timestamp`）。
+
+**定义层**
+
+```json
+// flow.created
+{
+  "flowModuleId": "m1",
+  "flowKey": "leave-approval"
+}
+
+// flow.updated
+{
+  "flowModuleId": "m1"
+}
+
+// flow.deployed
+{
+  "flowModuleId": "m1",
+  "flowDeployId": "d1"
+}
+
+// flow.deleted
+{
+  "flowModuleId": "m1"
+}
+```
+
+**实例层**
+
+```json
+// flow.instance.started
+{
+  "flowDeployId": "d1",
+  "flowInstanceId": "i1",
+  "variables": {
+    "amount": 100,
+    "applicant": "alice"
+  }
+}
+
+// flow.instance.completed
+{
+  "flowDeployId": "d1",
+  "flowInstanceId": "i1",
+  "variables": {
+    "amount": 100,
+    "approved": true
+  }
+}
+
+// flow.instance.failed
+{
+  "flowDeployId": "d1",
+  "flowInstanceId": "i1",
+  "error": "表达式执行异常"
+}
+
+// flow.instance.terminated
+{
+  "flowInstanceId": "i1"
+}
+```
+
+**用户任务层**
+
+```json
+// flow.usertask.suspended
+{
+  "flowDeployId": "d1",
+  "flowInstanceId": "i1",
+  "nodeInstanceId": "ni1",
+  "nodeKey": "approveNode",
+  "variables": {
+    "amount": 500
+  },
+  "nodeAttributes": {
+    "name": "审批",
+    "assignee": "manager",
+    "multiInstance": false
+  }
+}
+
+// flow.usertask.committed
+{
+  "flowDeployId": "d1",
+  "flowInstanceId": "i1",
+  "nodeInstanceId": "ni1",
+  "nodeKey": "approveNode",
+  "nodeAttributes": {
+    "name": "审批",
+    "assignee": "manager"
+  }
+}
+
+// flow.usertask.rollback.suspended
+{
+  "flowDeployId": "d1",
+  "flowInstanceId": "i1",
+  "nodeInstanceId": "ni2",
+  "nodeKey": "approveNode",
+  "nodeAttributes": {
+    "name": "审批",
+    "assignee": "manager"
+  }
+}
+```
 
 ### 启用事件转发
 
@@ -155,9 +268,10 @@ ch = conn.channel()
 ch.exchange_declare(exchange="flexmodel.flow.events", exchange_type="topic", durable=True)
 q = ch.queue_declare(queue="external.flow.events", durable=True).method.queue
 ch.queue_bind(exchange="flexmodel.flow.events", queue=q, routing_key="flow.#")
-for _, _, body in ch.consume(q):
+for method, _, body in ch.consume(q):
     event = json.loads(body)
-    print(event["routingKey"], event["projectId"], event["flowInstanceId"])
+    # routing key 从 AMQP envelope 读取，不在 JSON 载荷中
+    print(method.routing_key, event["projectId"], event.get("flowInstanceId"))
 ```
 
 :::note
