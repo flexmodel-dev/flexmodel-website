@@ -84,10 +84,6 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 
 | 事件                           | routing key                                    | 额外字段                                                                         | 触发时机                         |
 |--------------------------------|------------------------------------------------|----------------------------------------------------------------------------------|----------------------------------|
-| FlowCreatedEvent               | `flow.<projectId>.created`                     | flowModuleId, flowKey                                                            | 定义创建成功后                   |
-| FlowUpdatedEvent               | `flow.<projectId>.updated`                     | flowModuleId                                                                     | 定义更新成功后                   |
-| FlowDeployedEvent              | `flow.<projectId>.deployed`                    | flowModuleId, flowDeployId                                                       | 定义部署成功后                   |
-| FlowDeletedEvent               | `flow.<projectId>.deleted`                     | flowModuleId                                                                     | 定义软删后                       |
 | FlowInstanceStartedEvent       | `flow.<projectId>.instance.started`            | flowDeployId, flowInstanceId, variables                                          | 实例启动后                       |
 | FlowInstanceCompletedEvent     | `flow.<projectId>.instance.completed`          | flowDeployId, flowInstanceId, variables                                          | 实例完成（COMPLETED/END）后      |
 | FlowInstanceFailedEvent        | `flow.<projectId>.instance.failed`             | flowDeployId, flowInstanceId, error                                              | 实例失败后                       |
@@ -103,32 +99,6 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 ### 事件数据结构
 
 下列为各事件 JSON 载荷示例（省略公共字段 `projectId`/`caller`/`timestamp`）。
-
-**定义层**
-
-```json
-// flow.<projectId>.created
-{
-  "flowModuleId": "m1",
-  "flowKey": "leave-approval"
-}
-
-// flow.<projectId>.updated
-{
-  "flowModuleId": "m1"
-}
-
-// flow.<projectId>.deployed
-{
-  "flowModuleId": "m1",
-  "flowDeployId": "d1"
-}
-
-// flow.<projectId>.deleted
-{
-  "flowModuleId": "m1"
-}
-```
 
 **实例层**
 
@@ -197,7 +167,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
   }
 }
 
-// flow.<projectId>.usertask.rollback.suspended
+// flow.<projectId>.usertask.rollbacked
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
@@ -228,7 +198,7 @@ ID）。
 
 topic 交换机支持按 routing key 通配符匹配队列绑定：
 
-- `flow.<projectId>.created` — 仅订阅某项目的定义创建
+- `flow.<projectId>.instance.started` — 仅订阅某项目的实例启动
 - `flow.<projectId>.instance.*` — 订阅某项目的实例层事件
 - `flow.<projectId>.#` — 订阅某项目的所有 Flow 生命周期事件
 - `flow.*.instance.#` — 订阅全部项目的实例层事件
