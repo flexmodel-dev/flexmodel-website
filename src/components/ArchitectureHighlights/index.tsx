@@ -22,7 +22,7 @@ const highlights: Highlight[] = [
   {
     icon: '🔌',
     title: '多协议开放',
-    description: '同时提供 REST、GraphQL、MCP、WebSocket、SSE 多种协议接入能力。',
+    description: '同时提供 REST、GraphQL、MCP、WebSocket、AMQP 多种协议接入能力。',
   },
   {
     icon: '🔒',
