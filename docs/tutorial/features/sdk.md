@@ -4,7 +4,8 @@ sidebar_position: 50
 
 # TypeScript SDK
 
-Flexmodel 提供官方 TypeScript SDK (`@flexmodel/sdk`)，让前端和 Node.js 开发者以模型命名空间 + 选项对象的方式对数据层进行 CRUD 操作，同时支持链式构建器处理复杂查询场景。
+Flexmodel 提供官方 TypeScript SDK (`@flexmodel/sdk`)，让前端和 Node.js 开发者以模型命名空间 + 选项对象的方式对数据层进行
+CRUD 操作，同时支持边缘函数调用、对象存储、GraphQL 查询、服务编排（流程）以及管理后台（Admin API），并支持链式构建器处理复杂查询场景。
 
 ## 安装
 
@@ -396,6 +397,127 @@ const result = await data.Student.query()
 | 终端方法 | `.execute()` | 执行 |
 | | `.single()` | 取第一条，无则 null |
 
+## 边缘函数（Functions）
+
+Open client 的 `functions` 命名空间调用边缘函数（Java 服务端代理转发到 Deno Runtime）：
+
+```typescript
+const result = await flexmodelClient.functions.invoke('myFn', {key: 'value'})
+```
+
+| 路由模式  | 调用路径                                      |
+|-----------|-----------------------------------------------|
+| path      | `{baseURL}/open/{projectId}/functions/{name}` |
+| subdomain | `{baseURL}/functions/{name}`                  |
+
+## 对象存储（Storage）
+
+`storage` 命名空间提供对象读写，对象级操作：
+
+```typescript
+// 列出对象
+const files = await flexmodelClient.storage.list('my-bucket', 'photos/')
+// 上传
+await flexmodelClient.storage.upload('my-bucket', 'photo.jpg', fileBlob)
+// 下载
+const blob = await flexmodelClient.storage.download('my-bucket', 'photo.jpg')
+// 获取元数据
+const meta = await flexmodelClient.storage.head('my-bucket', 'photo.jpg')
+// 删除
+await flexmodelClient.storage.delete('my-bucket', 'photo.jpg')
+```
+
+## GraphQL
+
+`graphql` 命名空间执行 GraphQL 查询：
+
+```typescript
+const result = await flexmodelClient.graphql.execute(`{ Student { id name age } }`)
+
+// 带变量
+const result2 = await flexmodelClient.graphql.execute(
+    `query GetStudent($id: ID!) { Student(id: $id) { name } }`,
+    {id: '001'},
+)
+```
+
+## 服务编排（流程）Flow
+
+流程命名空间按 API surface 分为两个层级：
+
+| 客户端                 | 命名空间      | 能力                                                    |
+|------------------------|---------------|---------------------------------------------------------|
+| `FlexmodelClient`      | `client.flow` | **运行态**：实例查询/终止、流程启动/提交/回滚、历史查询 |
+| `FlexmodelAdminClient` | `admin.flow`  | 运行态 + **设计态**：流程定义增删改查与部署             |
+
+> Open client 的 `flow` 仅含 `instances` 与 `execution` 子命名空间， **不含 `definitions`**——从类型层面保证终端用户无法访问设计态接口。
+
+> project 级命名空间（data/functions/storage/graphql/flow）可通过 `.project(id)` 选定项目，方法签名不含 projectId
+> 参数。详见[选定项目](#选定项目-projectid)。
+
+### 流程实例（`flow.instances`）
+
+```typescript
+// 列表查询（支持过滤与分页）
+const {list, total} = await flexmodelClient.flow.instances.list({
+    flowModuleId: 'fm_001', status: 1, page: 1, size: 20,
+})
+
+// 详情
+const inst = await flexmodelClient.flow.instances.get('flow_inst_001')
+
+// 终止（effectiveForSubFlowInstance 控制是否对子流程生效）
+await flexmodelClient.flow.instances.terminate('flow_inst_001', true)
+```
+
+### 流程执行（`flow.execution`）
+
+```typescript
+// 启动流程实例
+const startResult = await flexmodelClient.flow.execution.start({
+    flowModuleId: 'fm_001',
+    variables: {orderId: 'ORD-1001'},
+})
+
+// 提交任务
+await flexmodelClient.flow.execution.commit(startResult.flowInstanceId!, {
+    variables: {approved: true},
+})
+
+// 回滚任务
+await flexmodelClient.flow.execution.rollback(startResult.flowInstanceId!, {taskInstanceId: 'ti_001'})
+
+// 历史用户任务
+const tasks = await flexmodelClient.flow.execution.getHistoryUserTasks('flow_inst_001')
+
+// 历史元素（流程快照）
+const elements = await flexmodelClient.flow.execution.getHistoryElements('flow_inst_001')
+```
+
+### 流程定义（`admin.flow.definitions`，仅 Admin）
+
+```typescript
+// 列表
+const {list} = await adminClient.flow.definitions.list({flowName: '订单'})
+// 详情（可指定 flowDeployId 查看某个部署版本）
+const detail = await adminClient.flow.definitions.get('fm_001', 'fd_001')
+// 创建
+await adminClient.flow.definitions.create({flowKey: 'order_process', flowName: '订单流程', remark: '处理订单'})
+// 更新（含流程模型 JSON）
+await adminClient.flow.definitions.update('fm_001', {flowModel: '{}', flowName: '订单流程 v2'})
+// 删除
+await adminClient.flow.definitions.delete('fm_001')
+// 部署
+await adminClient.flow.definitions.deploy('fm_001')
+```
+
+### 流程路径映射
+
+| 客户端 | 路径前缀                              |
+|--------|---------------------------------------|
+| Open   | `/api/open/{projectId}/flows/...`     |
+| Admin  | `/api/projects/{projectId}/flows/...` |
+
 ## 类型安全
 
 通过 `data.schema<T>()` 或 `client.schema<T>()` 获得模型级类型推断：
@@ -425,6 +547,75 @@ db.data.Student.findMany({ where: { age: { _eq: 18 } } })
 
 ```typescript
 data.Student.findMany({ where: { age: { _eq: 18 } } })
+```
+
+## 管理后台（Admin API）
+
+管理后台使用 `FlexmodelAdminClient`（路径前缀 `/api/projects/{projectId}`），认证方式为 admin scope API Key 或系统 JWT。SDK
+同样预初始化了 `adminClient` 单例与 `configureAdmin` 配置函数。
+
+```typescript
+import {adminClient, configureAdmin} from '@flexmodel/sdk'
+
+configureAdmin({
+    baseURL: 'https://api.example.com',
+    apiKey: 'fm_ak_admin_xxxxx',
+    projectId: 'my-project',
+})
+```
+
+`FlexmodelAdminClient` 提供以下命名空间：
+
+| 命名空间          | 说明                                                                 |
+|-------------------|----------------------------------------------------------------------|
+| `admin.data`      | 管理端数据 CRUD（admin 路径）                                        |
+| `admin.projects`  | 项目管理：list/get/create/update/delete                              |
+| `admin.users`     | 用户管理：list/create/delete                                         |
+| `admin.apiKeys`   | API Key 管理：list/create/regenerate/delete                          |
+| `admin.functions` | 边缘函数管理（deploy/get/list/delete）+ 调用 invoke                  |
+| `admin.buckets`   | Bucket 管理：list/get/create/update/delete                           |
+| `admin.graphql`   | 管理端 GraphQL 查询（`.execute()`）                                  |
+| `admin.flow`      | 服务编排：设计态（`definitions`）+ 运行态（`instances`/`execution`） |
+
+> project 级命名空间（data/functions/storage/graphql/buckets/flow）通过 `.project(id)` 选定项目，方法签名不含 projectId
+> 参数。未调用时使用构造函数 / `configureAdmin()` 配置的默认 projectId。
+
+```typescript
+// 项目管理
+const projects = await adminClient.projects.list()
+await adminClient.projects.create({name: 'New Project'})
+
+// API Key
+const key = await adminClient.apiKeys.create({name: 'my-key', scope: 'open', readOnly: false})
+await adminClient.apiKeys.regenerate(key.id)
+
+// 部署边缘函数（使用默认 projectId）
+await adminClient.functions.deploy('myFn', {
+    'index.ts': 'export default async (req) => req.json()',
+})
+// 列表查询
+const {list} = await adminClient.functions.list({name: 'order'})
+// 选定项目后调用（多项目场景）
+const {list: cross} = await adminClient.project('demo').functions.list()
+// 调用边缘函数（admin 路径）
+const result = await adminClient.functions.invoke('myFn', {key: 'value'})
+
+// Bucket 管理
+await adminClient.buckets.create({name: 'my-bucket'})
+await adminClient.buckets.delete('old-bucket', true)   // 强制删除（含对象）
+```
+
+### 选定项目 `.project(id)`
+
+`.project(id)` 返回绑定到指定项目的视图，包含 data/functions/storage/graphql/buckets/flow， 不影响 admin 实例的默认
+projectId，适合多项目场景：
+
+```typescript
+const demo = adminClient.project('demo')
+await demo.functions.deploy('myFn', {'index.ts': '...'})
+await demo.buckets.create({name: 'my-bucket'})
+await demo.flow.definitions.deploy('fm_001')
+await demo.flow.instances.list({status: 1})
 ```
 
 ## 错误处理
