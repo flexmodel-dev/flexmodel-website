@@ -575,9 +575,11 @@ configureAdmin({
 | `admin.functions` | 边缘函数管理（deploy/get/list/delete）+ 调用 invoke                  |
 | `admin.buckets`   | Bucket 管理：list/get/create/update/delete                           |
 | `admin.graphql`   | 管理端 GraphQL 查询（`.execute()`）                                  |
+| `admin.branches`  | 分支管理：list/create/delete/merge                                   |
 | `admin.flow`      | 服务编排：设计态（`definitions`）+ 运行态（`instances`/`execution`） |
 
-> project 级命名空间（data/functions/storage/graphql/buckets/flow）通过 `.project(id)` 选定项目，方法签名不含 projectId
+> project 级命名空间（data/functions/storage/graphql/buckets/branches/flow）通过 `.project(id)` 选定项目，方法签名不含
+> projectId
 > 参数。未调用时使用构造函数 / `configureAdmin()` 配置的默认 projectId。
 
 ```typescript
@@ -605,15 +607,21 @@ await adminClient.buckets.create({name: 'my-bucket'})
 await adminClient.buckets.delete('old-bucket', true)   // 强制删除（含对象）
 ```
 
+// 分支管理 await adminClient.branches.create ({name: 'dev', sourceBranch: 'main', description: '开发分支'})
+const branches = await adminClient.branches.list ()
+await adminClient.branches.merge ({sourceBranch: 'dev', targetBranch: 'main', conflictStrategy: 'OVERWRITE'})
+await adminClient.branches.delete ('dev')
+
 ### 选定项目 `.project(id)`
 
-`.project(id)` 返回绑定到指定项目的视图，包含 data/functions/storage/graphql/buckets/flow， 不影响 admin 实例的默认
+`.project(id)` 返回绑定到指定项目的视图，包含 data/functions/storage/graphql/buckets/branches/flow， 不影响 admin 实例的默认
 projectId，适合多项目场景：
 
 ```typescript
 const demo = adminClient.project('demo')
 await demo.functions.deploy('myFn', {'index.ts': '...'})
 await demo.buckets.create({name: 'my-bucket'})
+await demo.branches.create({name: 'dev', sourceBranch: 'main'})
 await demo.flow.definitions.deploy('fm_001')
 await demo.flow.instances.list({status: 1})
 ```
