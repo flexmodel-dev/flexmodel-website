@@ -19,18 +19,18 @@ Flexmodel 提供了基于 BPMN 风格的可视化流程编排能力，允许用�
 
 ## 支持的节点类型
 
-| 节点类型 | 说明 |
-|---------|------|
-| 开始事件 (StartEvent) | 流程的起点，每个流程必须有一个 |
-| 结束事件 (EndEvent) | 流程的终点，执行到此节点后流程结束 |
-| 排排网关 (ExclusiveGateway) | 条件分支节点，根据表达式选择唯一的执行路径 |
-| 服务任务 (ServiceTask) | 执行服务逻辑的节点，支持 JavaScript 脚本执行 |
-| 用户任务 (UserTask) | 需要人工干预的节点，等待用户操作后继续 |
-| 调用活动 (CallActivity) | 调用另一个子流程的节点，支持同步调用 |
+| 节点类型                    | 说明                                         |
+|-----------------------------|----------------------------------------------|
+| 开始事件 (StartEvent)       | 流程的起点，每个流程必须有一个               |
+| 结束事件 (EndEvent)         | 流程的终点，执行到此节点后流程结束           |
+| 排他网关 (ExclusiveGateway) | 条件分支节点，根据表达式选择唯一的执行路径   |
+| 服务任务 (ServiceTask)      | 执行服务逻辑的节点，支持 JavaScript 脚本执行 |
+| 用户任务 (UserTask)         | 需要人工干预的节点，等待用户操作后继续       |
+| 调用活动 (CallActivity)     | 调用另一个子流程的节点，支持同步调用         |
 
 ## 插件体系
 
-流程引擎支持通过插件机制扩展功能：
+流程引擎支持通过插件机制扩展功能。
 
 - **表达式计算插件** (ExpressionCalculatorPlugin) — 计算流程中的条件表达式
 - **ID 生成插件** (IdGeneratorPlugin) — 生成流程实例的唯一标识
@@ -49,7 +49,7 @@ Flexmodel 提供了基于 BPMN 风格的可视化流程编排能力，允许用�
 
 ## API 端点
 
-流程编排相关的 REST API 基础路径为 `/api/projects/{projectId}/flows`：
+流程编排相关的 REST API 基础路径为 `/api/projects/{projectId}/flows`。
 
 | 端点 | 说明 |
 |------|------|
@@ -75,22 +75,22 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 | 字段        | 类型   | 说明                 |
 |-------------|--------|----------------------|
 | `projectId` | string | 所属项目 ID          |
-| `caller`    | string | 触发来源标识         |
+| `initiator` | string | 触发来源标识         |
 | `timestamp` | long   | 事件产生时间（毫秒） |
 
-> routing key 不在 JSON 载荷中，而是作为 AMQP 消息的 `routing key` 随 envelope 投递，订阅端从消息信封读取（见下方示例）。
+> routing key 不在 JSON 载荷中，而是作为 AMQP 消息的 `routing key` 与 envelope 投递，订阅端从消息信封读取（见下方示例）。
 
 各事件按类型额外携带字段：
 
 | 事件                           | routing key                                    | 额外字段                                                                         | 触发时机                         |
 |--------------------------------|------------------------------------------------|----------------------------------------------------------------------------------|----------------------------------|
-| FlowInstanceStartedEvent       | `flow.<projectId>.instance.started`            | flowDeployId, flowInstanceId, variables                                          | 实例启动后                       |
+| FlowInstanceStartedEvent       | `flow.<projectId>.instance.started`            | flowDeployId, flowInstanceId, variables                                          | 实例启动时                       |
 | FlowInstanceCompletedEvent     | `flow.<projectId>.instance.completed`          | flowDeployId, flowInstanceId, variables                                          | 实例完成（COMPLETED/END）后      |
-| FlowInstanceFailedEvent        | `flow.<projectId>.instance.failed`             | flowDeployId, flowInstanceId, error                                              | 实例失败后                       |
-| FlowInstanceTerminatedEvent    | `flow.<projectId>.instance.terminated`         | flowInstanceId                                                                   | 实例终止后（子流程级联逐个发送） |
-| UserTaskSuspendedEvent         | `flow.<projectId>.usertask.suspended`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, variables, nodeAttributes | 用户任务挂起前                   |
+| FlowInstanceFailedEvent        | `flow.<projectId>.instance.failed`             | flowDeployId, flowInstanceId, error                                              | 实例失败时                       |
+| FlowInstanceTerminatedEvent    | `flow.<projectId>.instance.terminated`         | flowInstanceId                                                                   | 实例终止后（子流程级联逐个发起） |
+| UserTaskSuspendedEvent         | `flow.<projectId>.usertask.suspended`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, variables, nodeAttributes | 用户任务挂起时                   |
 | UserTaskCommittedEvent         | `flow.<projectId>.usertask.committed`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务提交完成                 |
-| UserTaskRollbackSuspendedEvent | `flow.<projectId>.usertask.rollback-suspended` | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务回滚挂起前               |
+| UserTaskRollbackSuspendedEvent | `flow.<projectId>.usertask.rollback-suspended` | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务回滚挂起时               |
 
 > - `variables`：事件产生时刻的流程变量快照（对象），已做防御性拷贝，不可变。
 > - `nodeAttributes`：节点定义的扩展属性快照（即流程定义中该节点配置的 `properties`
@@ -98,7 +98,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 
 ### 事件数据结构
 
-下列为各事件 JSON 载荷示例（省略公共字段 `projectId`/`caller`/`timestamp`）。
+下列为各事件 JSON 载荷示例（省略公共字段 `projectId`/`initiator`/`timestamp`）。
 
 **实例层**
 
@@ -182,14 +182,14 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 
 ### 启用事件转发
 
-事件转发默认关闭，需在 Flexmodel 服务端开启并连接 RabbitMQ broker：
+事件转发默认关闭，需要在 Flexmodel 服务端开启并连接 RabbitMQ broker。
 
 ```properties
 # 打开 RabbitMQ 事件转发（默认关闭）
 flexmodel.events.rabbitmq.enabled=true
-# 交换机与通道名已在 flexmodel-server application.properties 中声明（连接器级默认值）：
+# 交换机与通道名已在 flexmodel-server application.properties 中声明（连接器级默认值）。
 #   exchange=flexmodel.events（topic、durable），通道=events-out
-# broker 连接配置（或开启 DevServices）
+# broker 连接配置（或使用 DevServices）。
 quarkus.rabbitmq.host=localhost
 quarkus.rabbitmq.username=guest
 quarkus.rabbitmq.password=guest
