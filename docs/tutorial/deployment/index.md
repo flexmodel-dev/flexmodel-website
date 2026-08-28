@@ -46,4 +46,4 @@ Flexmodel 支持两种运行模式：
 
 请见Github代码仓库，以下为docker-compose部署示例：
 
-https://github.com/flexmodel-dev/flexmodel/deploy
+https://github.com/flexmodel-dev/flexmodel/tree/main/deploy
