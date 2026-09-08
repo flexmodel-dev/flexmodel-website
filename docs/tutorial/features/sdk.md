@@ -605,12 +605,12 @@ const result = await adminClient.functions.invoke('myFn', {key: 'value'})
 // Bucket 管理
 await adminClient.buckets.create({name: 'my-bucket'})
 await adminClient.buckets.delete('old-bucket', true)   // 强制删除（含对象）
-```
-
-// 分支管理 await adminClient.branches.create ({name: 'dev', sourceBranch: 'main', description: '开发分支'})
+// 分支管理
+await adminClient.branches.create({name: 'dev', sourceBranch: 'main', description: '开发分支'})
 const branches = await adminClient.branches.list ()
 await adminClient.branches.merge ({sourceBranch: 'dev', targetBranch: 'main', conflictStrategy: 'OVERWRITE'})
 await adminClient.branches.delete ('dev')
+```
 
 ### 选定项目 `.project(id)`
 
