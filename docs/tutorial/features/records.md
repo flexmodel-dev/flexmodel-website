@@ -451,6 +451,55 @@ DELETE /records/batch
 {"studentClass.teacher.name": {"_contains": "李"}}
 ```
 
+**模型定义的关联过滤：**
+
+除了请求级 `filter`，模型中的 `@relation(filter)` 可以预先定义关系过滤规则。它不是记录查询参数，而是在展开关系字段时由引擎自动叠加：
+
+```fml
+activeStudents: Student[] @relation(
+  localField: "id",
+  foreignField: "classId",
+  filter: {
+    "activeStudents.status": { "_eq": "ACTIVE" }
+  }
+)
+```
+
+请求时只需要展开该关系字段：
+
+```
+GET /api/projects/{projectId}/models/Classes/records?expand=activeStudents
+```
+
+返回的 `activeStudents` 只包含 `status` 为 `ACTIVE` 的学生。请求级 `filter` 仍按本节语法独立使用；它不是
+`@relation(filter)` 的替代或覆盖配置。
+
+`@relation(filter)` 的路径规则与查询 DSL 保持一致：目标字段使用 `<关联字段名>.<字段名>`，例如 `activeStudents.status`
+；当前表字段在 `_field` 中直接写裸路径，例如 `{ "_field": "id" }`。条件关联可以不声明 `localField` / `foreignField`：
+
+```fml
+activeStudents: Student[] @relation(
+  filter: {
+    "_and": [
+      { "activeStudents.classId": { "_eq": { "_field": "id" } } },
+      { "activeStudents.status": { "_eq": "ACTIVE" } }
+    ]
+  }
+)
+```
+
+条件关联的 `filter` 必须至少包含一个当前表字段与目标模型字段的比较。除正向写法外，也可以反向书写：
+
+```fml
+activeStudents: Student[] @relation(
+  filter: {
+    "id": { "_eq": { "_field": "activeStudents.classId" } }
+  }
+)
+```
+
+两种写法都表示 `activeStudents.classId = 当前记录.id`。如果同一模型存在多个指向同一目标模型的关系字段，使用关系字段名作为目标路径前缀即可区分。
+
 **空值查询：**
 
 ```json
@@ -513,9 +562,19 @@ DELETE /records/batch
 
 不传 `expand` 时，不加载关联数据，仅返回本实体的字段。
 
+如果展开的关系字段在模型中定义了 `@relation(filter)`，展开结果会自动应用该过滤条件。`FOREIGN_KEY` 关联会在键匹配的基础上追加过滤；
+`CONDITION` 关联则完全由 `filter` 决定匹配哪些目标记录。
+
+复数关系未匹配到数据时返回空数组 `[]`，单数关系未匹配到数据时返回 `null`；不会返回一条目标字段全为 `null` 的占位记录。
+
+模型级过滤不会改变 `expand` 参数语法，展开结果仍返回在原关系字段下。
+
 ## GraphQL API
 
 GraphQL API 端点路径：`/api/projects/{projectId}/graphql`
+
+GraphQL `where` 入参结构与查询 DSL 保持一致，不因模型定义的 `@relation(filter)` 改变。当前版本中，`@relation(filter)` 已在
+REST 展开和对象懒加载路径生效，GraphQL 关联 resolver 的统一接入将在后续版本完善。
 
 每个模型自动生成对应的 GraphQL Query 和 Mutation：
 

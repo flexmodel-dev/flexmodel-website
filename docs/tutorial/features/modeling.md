@@ -103,13 +103,23 @@ Flexmodel 支持三种模型类型：
 
 **ModelRef**
 
-| 属性 | 类型 | 可选 | 描述 |
-|------|------|------|------|
-| multiple | Boolean | 否 | 是否多条，默认值为 `false` |
-| from | String | 否 | 数据从哪里来，从实体定义中获取 |
-| localField | String | 否 | 本地字段 |
-| foreignField | String | 否 | 外键字段 |
-| cascadeDelete | Boolean | 是 | 级联删除，控制删除当前数据时是否删除关联数据，默认值为 `false` |
+| 属性          | 类型    | 可选 | 描述                                                                                        |
+|---------------|---------|------|---------------------------------------------------------------------------------------------|
+| multiple      | Boolean | 否   | 是否多条，默认值为 `false`                                                                  |
+| from          | String  | 否   | 数据从哪里来，从实体定义中获取                                                              |
+| strategy      | String  | 是   | 元数据中的关联策略：`FOREIGN_KEY` 或 `CONDITION`；FML 根据参数自动推断，UI 可显式选择并保存 |
+| localField    | String  | 是   | 本地字段；`FOREIGN_KEY` 关联必填，`CONDITION` 关联不使用                                    |
+| foreignField  | String  | 是   | 外键字段；`FOREIGN_KEY` 关联必填，`CONDITION` 关联不使用                                    |
+| filter        | Object  | 是   | 关联过滤条件；`FOREIGN_KEY` 关联中为可选附加条件，`CONDITION` 关联中为必填完整关联谓词      |
+| cascadeDelete | Boolean | 是   | 级联删除，控制删除当前数据时是否删除关联数据，默认值为 `false`                              |
+
+`filter` 不能与 `cascadeDelete` 同时使用；`CONDITION` 关联是只读派生关系，不会生成外键或 DDL。`strategy` 不是 FML 注解参数，FML
+根据以下规则推断；JSON / UI 元数据会保存该值：
+
+| 策略          | 参数要求                                                   | 语义                                      |
+|---------------|------------------------------------------------------------|-------------------------------------------|
+| `FOREIGN_KEY` | 必须同时提供 `localField` 与 `foreignField`，`filter` 可选 | 先按外键匹配，再叠加 `filter`             |
+| `CONDITION`   | 不提供 `localField` / `foreignField`，必须提供 `filter`    | `filter` 是完整关联谓词，不生成外键或 DDL |
 
 ### 字段修饰符
 
@@ -151,12 +161,78 @@ FML 语法中常用的字段修饰符（注解）：
 
 实体之间通过 `@relation` 声明关联关系：
 
-| 语法 | 说明 |
-|------|------|
-| `field: Target` | 一对一/多对一引用 |
-| `field: Target[]` | 一对多引用（字段名后加 `[]`） |
-| `@relation(localField, foreignField)` | 指定本地字段和关联字段 |
-| `@relation(..., cascadeDelete: true)` | 启用级联删除 |
+| 语法                                          | 说明                                          |
+|-----------------------------------------------|-----------------------------------------------|
+| `field: Target`                               | 一对一/多对一引用                             |
+| `field: Target[]`                             | 一对多引用（字段名后加 `[]`）                 |
+| `@relation(localField, foreignField)`         | 指定本地字段和关联字段                        |
+| `@relation(..., cascadeDelete: true)`         | 启用级联删除                                  |
+| `@relation(localField, foreignField, filter)` | 外键关联后追加运行时过滤                      |
+| `@relation(filter)`                           | 不依赖外键的条件关联，`filter` 是完整关联谓词 |
+
+#### 关联过滤（filter）
+
+`filter` 使用现有查询条件 DSL 的路径风格：
+
+- 目标模型字段写成 `<关联字段名>.<字段名>`，例如 `activeStudents.status`。
+- 当前模型字段在 `_field` 中直接写裸路径，例如 `{ "_field": "id" }`。
+- 不使用 `source.*` 或 `target.*` 前缀。
+
+条件关联必须至少包含一个当前表字段与目标模型字段的比较；仅对目标字段设置常量条件不是有效关联谓词。除正向写法外，也可以把当前表字段作为条件键、目标字段放在
+`_field` 中：
+
+```fml
+activeStudents: Student[] @relation(
+  filter: {
+    "id": { "_eq": { "_field": "activeStudents.classId" } }
+  }
+)
+```
+
+它与 `{ "activeStudents.classId": { "_eq": { "_field": "id" } } }` 语义等价，都表示
+`activeStudents.classId = 当前记录.id`。
+
+同一个对象中的多个顶层条件按 `_and` 处理；也可以显式使用 `"_and": [...]` 数组。每个条件值都必须是常量或操作符对象：
+
+```fml
+activeStudents: Student[] @relation(
+  localField: "id",
+  foreignField: "classId",
+  filter: {
+    "activeStudents.status": { "_eq": "ACTIVE" },
+    "activeStudents.classId": { "_eq": { "_field": "id" } }
+  }
+)
+```
+
+外键关联追加过滤：
+
+```fml
+activeStudents: Student[] @relation(
+  localField: "id",
+  foreignField: "classId",
+  filter: {
+    "activeStudents.status": { "_eq": "ACTIVE" }
+  }
+)
+```
+
+条件关联不声明 `localField` / `foreignField`，`filter` 独立承担关联条件：
+
+```fml
+activeStudents: Student[] @relation(
+  filter: {
+    "_and": [
+      { "activeStudents.classId": { "_eq": { "_field": "id" } } },
+      { "activeStudents.status": { "_eq": "ACTIVE" } }
+    ]
+  }
+)
+```
+
+两种写法都表示“当前班级下的活跃学生”。如果同一实体存在多个指向同一目标模型的关系字段，使用关系字段名作为目标路径前缀可以避免歧义。
+
+最佳实践是优先用外键关联表达稳定的数据关系；条件关联适合派生视图或临时业务规则，并应为高频参与条件的目标字段创建索引。
 
 枚举类型可直接作为字段类型引用，多选枚举使用 `EnumType[]` 语法：
 
@@ -311,8 +387,10 @@ FML 语法中常用的字段修饰符（注解）：
         "nullable": true,
         "multiple": false,
         "from": "StudentDetail",
+        "strategy": "FOREIGN_KEY",
         "localField": "id",
         "foreignField": "studentId",
+        "filter": null,
         "cascadeDelete": true
       }
     ],
@@ -429,6 +507,11 @@ model Classes {
   classCode: String @unique @length(255),
   className?: String @default("A班级"),
   students: Student[] @relation(localField: "id", foreignField: "classId", cascadeDelete: true),
+  activeStudents: Student[] @relation(
+    localField: "id",
+    foreignField: "classId",
+    filter: { "activeStudents.status": { "_eq": "ACTIVE" } }
+  ),
   @comment("班级")
 }
 
@@ -440,6 +523,7 @@ model Student {
   interest?: User_interest[],
   age?: Int,
   classId?: Long,
+  status?: String,
   studentClass: Classes @relation(localField: "classId", foreignField: "id"),
   studentDetail: StudentDetail @relation(localField: "id", foreignField: "studentId", cascadeDelete: true),
   createdAt?: DateTime @default(now()),
@@ -534,11 +618,14 @@ createdAt: DateTime @default(now())
 
 定义关联关系，支持以下参数：
 
-| 参数 | 类型 | 描述 | 示例 |
-|------|------|------|------|
-| `localField` | String | 本地字段名 | `localField: "id"` |
-| `foreignField` | String | 外键字段名 | `foreignField: "studentId"` |
-| `cascadeDelete` | Boolean | 是否级联删除 | `cascadeDelete: true` |
+| 参数            | 类型    | 描述                                                       | 示例                                                       |
+|-----------------|---------|------------------------------------------------------------|------------------------------------------------------------|
+| `localField`    | String  | 本地字段名                                                 | `localField: "id"`                                         |
+| `foreignField`  | String  | 外键字段名                                                 | `foreignField: "studentId"`                                |
+| `filter`        | Object  | 关联过滤条件；`CONDITION` 关联必填，`FOREIGN_KEY` 关联可选 | `filter: { "activeStudents.status": { "_eq": "ACTIVE" } }` |
+| `cascadeDelete` | Boolean | 是否级联删除                                               | `cascadeDelete: true`                                      |
+
+`strategy` 由 `localField` / `foreignField` 与 `filter` 自动推断，不需要在 FML 注解中传入。
 
 ```fml
 // 一对一关系
@@ -549,7 +636,26 @@ students: Student[] @relation(localField: "id", foreignField: "classId", cascade
 
 // 多对一关系
 studentClass: Classes @relation(localField: "classId", foreignField: "id")
+
+// 外键关联 + 附加过滤
+activeStudents: Student[] @relation(
+  localField: "id",
+  foreignField: "classId",
+  filter: { "activeStudents.status": { "_eq": "ACTIVE" } }
+)
+
+// 条件关联，不生成外键或 DDL
+activeStudents: Student[] @relation(
+  filter: {
+    "_and": [
+      { "activeStudents.classId": { "_eq": { "_field": "id" } } },
+      { "activeStudents.status": { "_eq": "ACTIVE" } }
+    ]
+  }
+)
 ```
+
+`filter` 与 `cascadeDelete` 互斥。UI 建模表单会根据 `FOREIGN_KEY` / `CONDITION` 策略联动显示并校验对应字段。
 
 **@index 注解**
 
@@ -596,7 +702,7 @@ studentClass: Classes @relation(localField: "classId", foreignField: "id")
 2. **字段顺序**：主键字段放在最前面，关联字段放在最后
 3. **注释使用**：为复杂字段和模型添加注释
 4. **索引优化**：为常用查询字段创建索引
-5. **关联设计**：合理设计关联关系，避免循环依赖
+5. **关联设计**：优先使用外键关联表达稳定关系，条件关联仅用于派生视图或临时规则；为高频条件字段建立索引
 
 FML 脚本支持在管理界面中直接编辑和执行，适合批量建模和模型迁移场景。
 
