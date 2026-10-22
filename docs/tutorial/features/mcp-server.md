@@ -14,7 +14,7 @@ Flexmodel 基于 Quarkus MCP Server HTTP 扩展实现 MCP 协议，MCP 服务路
 
 ## 提供的工具
 
-Flexmodel MCP Server 提供 4 组共 21 个工具：
+Flexmodel MCP Server 按项目、建模、数据、函数、应用和通用人员目录分组提供工具：
 
 ### 项目管理工具（ProjectTools）
 
@@ -56,6 +56,64 @@ Flexmodel MCP Server 提供 4 组共 21 个工具：
 | `deploy_function`         | 部署函数到 Functions Runtime |
 | `invoke_function`         | 调用函数                     |
 | `delete_function`         | 删除函数                     |
+
+### 应用工具（AppTools）
+
+| 工具名称                                              | 说明                                                     |
+|-------------------------------------------------------|----------------------------------------------------------|
+| `list_apps` / `get_app` / `create_app`                | 查询或创建应用                                           |
+| `list_app_forms` / `get_app_form` / `create_app_form` | 查询表单或创建表单及字段                                 |
+| `save_app_form_layout`                                | 保存表单扁平布局                                         |
+| `create_app_menu`                                     | 创建应用菜单并绑定表单、内置页面或链接                   |
+| `create_app_mock_records`                             | 创建显式示例记录                                         |
+| `list_app_workbenches` / `get_app_workbench`          | 查询工作台                                               |
+| `get_app_workbench_capabilities`                      | 获取工作台组件契约                                       |
+| `get_app_workbench_component_data`                    | 查询组件真实数据                                         |
+| `create_app_workbench` / `save_app_workbench_layout`  | 创建工作台或保存布局                                     |
+| `create_app_workbench_menu`                           | 创建关联工作台的菜单                                     |
+| `get_app_approval_capabilities`                       | 获取审批节点配置、表单字段、子流程、限制及完整 Flow 示例 |
+| `list_app_approval_flows` / `get_app_approval_flow`   | 查询应用审批流程及最新 revision                          |
+| `save_app_approval_flow`                              | 新建或更新审批草稿                                       |
+| `validate_app_approval_flow`                          | 发布前校验，返回带 nodeId 的问题列表                     |
+| `set_app_approval_flow_status`                        | 发布启用或停用审批流程                                   |
+
+### 通用人员目录工具（DirectoryTools）
+
+| 工具名称          | 说明                                                         |
+|-------------------|--------------------------------------------------------------|
+| `get_directory`   | 查询系统启用用户、角色、组织层级及人员选择规则，不需要 appId |
+| `resolve_members` | 使用真实目录预览人员规则，稳定去重后返回用户 ID              |
+
+目录只返回用于选择的成员信息，不返回密码等认证字段。人员来源支持 `users`、`roles`、`organizations`、`initiator`、`node`、
+`variable`；范围支持 `self`、`directReports`、`allReports`、`manager`。`resolve_members` 的 `initiatorId` 和 `variablesJson`
+仅为预览上下文，不会代替真实用户提交或签核。
+
+## 通过 MCP 创建应用审批流程
+
+连接后，可以向 AI 描述需求，例如：
+
+> 在费用管理应用的报销表单上创建审批流程：先由发起人的直属上级审批；金额超过 5000 元时，再由财务角色会签；通过后结束。
+
+工具调用顺序：
+
+1. `list_apps`、`list_app_forms`：确定 appId、表单名和实际字段名。
+2. `get_app_approval_capabilities(appId)`：读取节点配置与 `examples.simple` / `examples.gateway`
+   。示例优先绑定当前应用的第一个真实表单，使用前需替换成目标表单。
+3. `get_directory()`、`resolve_members(...)`：确定真实人员、角色或部门 ID，按需预览相对人员规则。
+4. `list_app_approval_flows(appId)`：避免重复创建，查找需要引用的子流程。
+5. `save_app_approval_flow(appId, flowJson)`：省略 flowId 创建草稿，保存返回的 flow_module_id 和 revision。
+6. `validate_app_approval_flow(appId, flowJson)`：传入保存后的完整定义，修正问题直至返回空数组。
+7. `set_app_approval_flow_status(appId, flowId, 2, revision)`：发布启用。
+
+`flowJson` 是包含 `flow_name`、`flow_model`、可选 `flow_key` / `remark` 的 JSON 对象字符串；其中 **`flow_model` 本身也是
+JSON 字符串**，内部为 `flowElementList`。节点的配置和设计器层级必须与连线一致，应从能力目录的完整示例开始修改。不要传入
+FlowGram 节点树，也不要自行写入服务端 handler、handlerOwner 或发布元数据。
+
+修改已有流程时，先读取最新定义，再携带 flowId 和 flowJson 中的 revision 保存。保存已启用流程会使其转为草稿，需重新发布；停用使用
+status=3。发生版本冲突时重新读取并合并修改，已有运行实例保持原发布版本。
+
+新增审批工具检查 API Key 的项目范围，且只读 Key 不能保存或发布。审计身份为 `api_key:<keyId>`
+，不会冒充审批人。发布不会自动提交记录，用户需在记录详情显式提交审批；运行时要求 SQL 项目数据库。
 
 ## 认证
 
