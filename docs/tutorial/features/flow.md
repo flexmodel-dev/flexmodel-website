@@ -66,7 +66,7 @@ Flexmodel 提供了基于 BPMN 风格的可视化流程编排能力，允许用�
 
 ## 生命周期事件
 
-Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会转发到一个 topic 交换机，外部系统可通过订阅这些事件感知流程状态变化并接入下游业务。
+Flow 引擎在关键生命周期点发布事件到本地 Vert.x EventBus，供服务内部订阅者消费。
 
 ### 事件结构
 
@@ -78,19 +78,17 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 | `initiator` | string | 触发来源标识         |
 | `timestamp` | long   | 事件产生时间（毫秒） |
 
-> routing key 不在 JSON 载荷中，而是作为 AMQP 消息的 `routing key` 与 envelope 投递，订阅端从消息信封读取（见下方示例）。
-
 各事件按类型额外携带字段：
 
-| 事件                           | routing key                                    | 额外字段                                                                         | 触发时机                         |
-|--------------------------------|------------------------------------------------|----------------------------------------------------------------------------------|----------------------------------|
-| FlowInstanceStartedEvent       | `flow.<projectId>.instance.started`            | flowDeployId, flowInstanceId, variables                                          | 实例启动时                       |
-| FlowInstanceCompletedEvent     | `flow.<projectId>.instance.completed`          | flowDeployId, flowInstanceId, variables                                          | 实例完成（COMPLETED/END）后      |
-| FlowInstanceFailedEvent        | `flow.<projectId>.instance.failed`             | flowDeployId, flowInstanceId, error                                              | 实例失败时                       |
-| FlowInstanceTerminatedEvent    | `flow.<projectId>.instance.terminated`         | flowInstanceId                                                                   | 实例终止后（子流程级联逐个发起） |
-| UserTaskSuspendedEvent         | `flow.<projectId>.usertask.suspended`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, variables, nodeAttributes | 用户任务挂起时                   |
-| UserTaskCommittedEvent         | `flow.<projectId>.usertask.committed`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务提交完成                 |
-| UserTaskRollbackSuspendedEvent | `flow.<projectId>.usertask.rollback-suspended` | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务回滚挂起时               |
+| 事件                           | EventBus 地址                      | 额外字段                                                                         | 触发时机                         |
+|--------------------------------|------------------------------------|----------------------------------------------------------------------------------|----------------------------------|
+| FlowInstanceStartedEvent       | `flow.instance.started`            | flowDeployId, flowInstanceId, variables                                          | 实例启动时                       |
+| FlowInstanceCompletedEvent     | `flow.instance.completed`          | flowDeployId, flowInstanceId, variables                                          | 实例完成（COMPLETED/END）后      |
+| FlowInstanceFailedEvent        | `flow.instance.failed`             | flowDeployId, flowInstanceId, error                                              | 实例失败时                       |
+| FlowInstanceTerminatedEvent    | `flow.instance.terminated`         | flowInstanceId                                                                   | 实例终止后（子流程级联逐个发起） |
+| UserTaskSuspendedEvent         | `flow.usertask.suspended`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, variables, nodeAttributes | 用户任务挂起时                   |
+| UserTaskCommittedEvent         | `flow.usertask.committed`          | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务提交完成                 |
+| UserTaskRollbackSuspendedEvent | `flow.usertask.rollback-suspended` | flowDeployId, flowInstanceId, nodeInstanceId, nodeKey, nodeAttributes            | 用户任务回滚挂起时               |
 
 > - `variables`：事件产生时刻的流程变量快照（对象），已做防御性拷贝，不可变。
 > - `nodeAttributes`：节点定义的扩展属性快照（即流程定义中该节点配置的 `properties`
@@ -103,7 +101,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 **实例层**
 
 ```json
-// flow.<projectId>.instance.started
+// flow.instance.started
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
@@ -113,7 +111,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
   }
 }
 
-// flow.<projectId>.instance.completed
+// flow.instance.completed
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
@@ -123,14 +121,14 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
   }
 }
 
-// flow.<projectId>.instance.failed
+// flow.instance.failed
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
   "error": "表达式执行异常"
 }
 
-// flow.<projectId>.instance.terminated
+// flow.instance.terminated
 {
   "flowInstanceId": "i1"
 }
@@ -139,7 +137,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 **用户任务层**
 
 ```json
-// flow.<projectId>.usertask.suspended
+// flow.usertask.suspended
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
@@ -155,7 +153,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
   }
 }
 
-// flow.<projectId>.usertask.committed
+// flow.usertask.committed
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
@@ -167,7 +165,7 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
   }
 }
 
-// flow.<projectId>.usertask.rollback-suspended
+// flow.usertask.rollback-suspended
 {
   "flowDeployId": "d1",
   "flowInstanceId": "i1",
@@ -180,72 +178,6 @@ Flow 引擎在关键生命周期点发布事件，启用 RabbitMQ 桥接后会�
 }
 ```
 
-### 启用事件转发
+### 外部系统集成
 
-事件转发默认关闭，需要在 Flexmodel 服务端开启并连接 RabbitMQ broker。
-
-```properties
-# 打开 RabbitMQ 事件转发（默认关闭）
-flexmodel.events.rabbitmq.enabled=true
-# 交换机与通道名已在 flexmodel-server application.properties 中声明（连接器级默认值）。
-#   exchange=flexmodel.events（topic、durable），通道=events-out
-# broker 连接配置（或使用 DevServices）。
-quarkus.rabbitmq.host=localhost
-quarkus.rabbitmq.username=guest
-quarkus.rabbitmq.password=guest
-```
-
-启用后，事件会被转发到名为 `flexmodel.events` 的 **topic** 交换机（与数据变更事件共用），routing key 即上表列出的 key。
-
-### 订阅事件
-
-topic 交换机支持按 routing key 通配符匹配队列绑定，routing key 以 `flow.<projectId>.` 开头，可按项目、层或事件类型订阅：
-
-- `flow.<projectId>.usertask.started` — 仅订阅指定项目的用户任务启动事件
-- `flow.<projectId>.instance.*` — 订阅指定项目的全部实例层事件
-- `flow.<projectId>.#` — 订阅指定项目的全部流程事件
-- `flow.#` — 订阅所有项目的全部流程事件
-
-**Quarkus 服务订阅**（smallrye-messaging-rabbitmq）：
-
-```java
-
-@ApplicationScoped
-public class FlowEventListener {
-
-    @Incoming("flow-events-in")
-    public void consume(org.eclipse.microprofile.reactive.messaging.Message<String> msg) {
-        // 消息体为事件 JSON；可结合 incoming 通道的 routing-key 元数据分发
-        System.out.println("received flow event: " + msg.getPayload());
-        msg.ack();
-    }
-}
-
-// application.properties
-// mp.messaging.incoming.flow-events-in.connector=smallrye-rabbitmq
-// mp.messaging.incoming.flow-events-in.exchange.name=flexmodel.events
-// mp.messaging.incoming.flow-events-in.exchange.routing-keys=flow.#
-// mp.messaging.incoming.flow-events-in.queue.name=external.flow.events
-// mp.messaging.incoming.flow-events-in.queue.durable=true
-```
-
-**通用 AMQP 客户端订阅**（以 Python pika 为例）：
-
-```python
-import pika, json
-conn = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
-ch = conn.channel()
-ch.exchange_declare(exchange="flexmodel.events", exchange_type="topic", durable=True)
-q = ch.queue_declare(queue="external.flow.events", durable=True).method.queue
-ch.queue_bind(exchange="flexmodel.events", queue=q, routing_key="flow.#")
-for method, _, body in ch.consume(q):
-    event = json.loads(body)
-    # routing key 从 AMQP envelope 读取，不在 JSON 载荷中
-    print(method.routing_key, event["projectId"], event.get("flowInstanceId"))
-```
-
-:::note
-
-v1 不包含 `node-instance-created`、`service-task-executed/failed`、`gateway-evaluated` 等事件，后续按相同模式按需追加。
-
-:::
+生命周期事件只在进程内 EventBus 分发，服务端不提供消息队列转发。外部系统如需感知流程状态变化，应通过业务数据变更或流程实例查询接口获取。
