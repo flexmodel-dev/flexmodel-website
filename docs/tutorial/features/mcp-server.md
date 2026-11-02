@@ -63,7 +63,7 @@ Flexmodel MCP Server 按项目、建模、数据、函数、应用和通用人�
 |-------------------------------------------------------|----------------------------------------------------------|
 | `list_apps` / `get_app` / `create_app`                | 查询或创建应用                                           |
 | `list_app_forms` / `get_app_form` / `create_app_form` | 查询表单或创建表单及字段                                 |
-| `save_app_form_layout`                                | 保存表单扁平布局                                         |
+| `save_app_form_layout`                                | 保存表单扁平布局与字段显示控制（`controlsJson`）         |
 | `create_app_menu`                                     | 创建应用菜单并绑定表单、内置页面或链接                   |
 | `create_app_mock_records`                             | 创建显式示例记录                                         |
 | `list_app_workbenches` / `get_app_workbench`          | 查询工作台                                               |
@@ -76,6 +76,37 @@ Flexmodel MCP Server 按项目、建模、数据、函数、应用和通用人�
 | `save_app_approval_flow`                              | 新建或更新审批草稿                                       |
 | `validate_app_approval_flow`                          | 发布前校验，返回带 nodeId 的问题列表                     |
 | `set_app_approval_flow_status`                        | 发布启用或停用审批流程                                   |
+
+`save_app_form_layout` 额外支持可选的 `controlsJson`，按字段名配置隐藏、必填、只读：
+
+```json
+{
+  "title": {
+    "hidden": {
+      "scenes": [
+        "CREATE",
+        "UPDATE"
+      ],
+      "condition": {
+        "status": {
+          "_eq": "REJECTED"
+        }
+      }
+    }
+  },
+  "amount": {
+    "readonly": {
+      "scenes": [
+        "UPDATE"
+      ]
+    }
+  }
+}
+```
+
+`scenes` 非空，取 `CREATE` / `UPDATE`；`condition` 复用记录查询 filter DSL，缺省表示在所选场景始终生效。
+省略 `controlsJson` 保留现有控制，传 `{}` 清空；控制键必须出现在 `itemsJson` 中，内置字段始终展示且只读、忽略控制。
+条件中的字段名应先通过 `get_app_form` 确认。
 
 ### 通用人员目录工具（DirectoryTools）
 
