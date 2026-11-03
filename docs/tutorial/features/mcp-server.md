@@ -59,23 +59,25 @@ Flexmodel MCP Server 按项目、建模、数据、函数、应用和通用人�
 
 ### 应用工具（AppTools）
 
-| 工具名称                                              | 说明                                                     |
-|-------------------------------------------------------|----------------------------------------------------------|
-| `list_apps` / `get_app` / `create_app`                | 查询或创建应用                                           |
-| `list_app_forms` / `get_app_form` / `create_app_form` | 查询表单或创建表单及字段                                 |
-| `save_app_form_layout`                                | 保存表单扁平布局与字段显示控制（`controlsJson`）         |
-| `create_app_menu`                                     | 创建应用菜单并绑定表单、内置页面或链接                   |
-| `create_app_mock_records`                             | 创建显式示例记录                                         |
-| `list_app_workbenches` / `get_app_workbench`          | 查询工作台                                               |
-| `get_app_workbench_capabilities`                      | 获取工作台组件契约                                       |
-| `get_app_workbench_component_data`                    | 查询组件真实数据                                         |
-| `create_app_workbench` / `save_app_workbench_layout`  | 创建工作台或保存布局                                     |
-| `create_app_workbench_menu`                           | 创建关联工作台的菜单                                     |
-| `get_app_approval_capabilities`                       | 获取审批节点配置、表单字段、子流程、限制及完整 Flow 示例 |
-| `list_app_approval_flows` / `get_app_approval_flow`   | 查询应用审批流程及最新 revision                          |
-| `save_app_approval_flow`                              | 新建或更新审批草稿                                       |
-| `validate_app_approval_flow`                          | 发布前校验，返回带 nodeId 的问题列表                     |
-| `set_app_approval_flow_status`                        | 发布启用或停用审批流程                                   |
+| 工具名称                                              | 说明                                                                 |
+|-------------------------------------------------------|----------------------------------------------------------------------|
+| `list_apps` / `get_app` / `create_app`                | 查询或创建应用                                                       |
+| `list_app_forms` / `get_app_form` / `create_app_form` | 查询表单或创建表单及字段                                             |
+| `save_app_form_layout`                                | 保存表单扁平布局与字段显示控制（`controlsJson`）                     |
+| `get_app_form_view_capabilities`                      | 获取视图页签能力目录（类型契约、筛选操作符、当前字段与视图）         |
+| `save_app_form_views`                                 | 替换表单完整视图页签列表（表格/看板/日历/画廊/详情/层级/甘特）       |
+| `create_app_navigation`                               | 创建应用导航并绑定表单、内置页面或链接；工作台页面可选绑定具体工作台 |
+| `create_app_mock_records`                             | 创建显式示例记录                                                     |
+| `list_app_workbenches` / `get_app_workbench`          | 查询工作台                                                           |
+| `get_app_workbench_capabilities`                      | 获取工作台组件契约                                                   |
+| `get_app_workbench_component_data`                    | 查询组件真实数据                                                     |
+| `create_app_workbench` / `save_app_workbench_layout`  | 创建工作台或保存布局                                                 |
+| `create_app_workbench_navigation`                     | 创建关联工作台的导航，可选 `workbenchId` 绑定具体工作台              |
+| `get_app_approval_capabilities`                       | 获取审批节点配置、表单字段、子流程、限制及完整 Flow 示例             |
+| `list_app_approval_flows` / `get_app_approval_flow`   | 查询应用审批流程及最新 revision                                      |
+| `save_app_approval_flow`                              | 新建或更新审批草稿                                                   |
+| `validate_app_approval_flow`                          | 发布前校验，返回带 nodeId 的问题列表                                 |
+| `set_app_approval_flow_status`                        | 发布启用或停用审批流程                                               |
 
 `save_app_form_layout` 额外支持可选的 `controlsJson`，按字段名配置隐藏、必填、只读：
 
@@ -107,6 +109,21 @@ Flexmodel MCP Server 按项目、建模、数据、函数、应用和通用人�
 `scenes` 非空，取 `CREATE` / `UPDATE`；`condition` 复用记录查询 filter DSL，缺省表示在所选场景始终生效。
 省略 `controlsJson` 保留现有控制，传 `{}` 清空；控制键必须出现在 `itemsJson` 中，内置字段始终展示且只读、忽略控制。
 条件中的字段名应先通过 `get_app_form` 确认。
+
+`save_app_form_views` 用 `viewsJson`（JSON 数组字符串） **整体替换**表单的视图页签列表：每个视图为
+`{id,label,type,filter,sort,displayFields,config}`，`type` 支持 TABLE、KANBAN、CALENDAR、GALLERY、DETAIL、HIERARCHY、
+GANTT。调用前先通过 `get_app_form_view_capabilities(appId, formName)` 读取能力目录：视图类型契约（各类型 config 字段的
+必填/可选、可引用字段类型、枚举值与默认值）、按当前表单字段类型的筛选操作符、数量与长度限制、表单真实字段清单，以及
+需要保留的当前视图。`viewsJson` 会整体替换视图列表，需把保留的视图一并传入，且至少保留一个视图。筛选条件为
+`{"_and":[...]}` / `{"_or":[...]}`（1-10 项，每项 `{"字段":{操作符:值}}`）。例如：
+
+```json
+[
+  {"id": "all", "label": "全部", "type": "TABLE", "sort": {"field": "created_at", "order": "DESC"}},
+  {"label": "高优先级", "type": "TABLE", "filter": {"_and": [{"priority": {"_eq": "high"}}]}},
+  {"label": "状态看板", "type": "KANBAN", "config": {"groupField": "status", "titleField": "name"}}
+]
+```
 
 ### 通用人员目录工具（DirectoryTools）
 
